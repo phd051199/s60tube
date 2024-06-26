@@ -1,5 +1,4 @@
 import type { FC } from 'hono/jsx';
-import MainLayout from './MainLayout';
 
 const StreamingInstructions: FC = () => {
   return (
@@ -7,10 +6,7 @@ const StreamingInstructions: FC = () => {
       <h2 style={styles.h2}>Streaming</h2>
       <h4 style={styles.h4}>
         Please copy the link below and use
-        <a
-          href="https://github.com/phd051199/s60tube/raw/main/coreplayer/coreplayer.sis"
-          style={styles.link}
-        >
+        <a href="/coreplayer" style={styles.link}>
           <span> CorePlayer </span>
         </a>
         to play it.
@@ -64,18 +60,23 @@ const DownloadSection: FC<{ url: string }> = (props) => {
 
 const DetailPage: FC = (props) => {
   return (
-    <MainLayout title="Video Detail">
+    <main>
       <StreamingInstructions />
       <input style={styles.input} value={props.url} />
       <DownloadSection url={props.url} />
-    </MainLayout>
+      {!!props.invidious ? (
+        <p>From: {props.invidious}</p>
+      ) : (
+        <p>From: Cloudflare workers</p>
+      )}
+    </main>
   );
 };
 
 const styles = {
   h2: {
     fontSize: '2rem',
-    marginBottom: '12px'
+    margin: '12px 0px'
   },
   h4: {
     margin: '4px 0px',

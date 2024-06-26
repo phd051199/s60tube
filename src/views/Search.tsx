@@ -1,10 +1,9 @@
 import type { FC } from 'hono/jsx';
-import MainLayout from './MainLayout';
-import get from 'lodash/get';
+import { get } from 'lodash';
 
 const SearchBar: FC = ({ q }) => {
   return (
-    <form action="/search" method="get">
+    <form action="/search" method="get" style={{ marginBottom: '12px' }}>
       <input
         id="inputField"
         className="input-field"
@@ -30,17 +29,13 @@ const SearchBar: FC = ({ q }) => {
 };
 
 const Video: FC = ({ item }) => {
-  if (!get(item, 'short_view_count.text')) {
-    console.log(item);
-  }
-
   return (
     <div style={styles.videoContainer}>
       <a href={'/video/' + get(item, 'id')}>
         <div>
           <div style={{ display: 'flex' }}>
             <img
-              src={`https://img.youtube.com/vi/${get(item, 'id')}/default.jpg`}
+              src={`/proxy?url=https://img.youtube.com/vi/${get(item, 'id')}/default.jpg`}
               alt={get(item, 'id')}
               style={styles.thumbnail}
             />
@@ -64,19 +59,17 @@ const Video: FC = ({ item }) => {
 };
 
 const SearchPage: FC = ({ q, data }) => {
-  const videos = data.map((item) => <Video item={item} key={item.id} />);
+  const videos = data.map((item: any) => <Video item={item} key={item.id} />);
 
   return (
-    <MainLayout title="Search results">
-      <div
-        style={{
-          width: '100%'
-        }}
-      >
-        <SearchBar q={q} />
-        {videos}
-      </div>
-    </MainLayout>
+    <main
+      style={{
+        width: '100%'
+      }}
+    >
+      <SearchBar q={q} />
+      {videos}
+    </main>
   );
 };
 

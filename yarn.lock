@@ -5,54 +5,54 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"@cloudflare/kv-asset-handler@npm:0.3.3":
-  version: 0.3.3
-  resolution: "@cloudflare/kv-asset-handler@npm:0.3.3"
+"@cloudflare/kv-asset-handler@npm:0.3.4":
+  version: 0.3.4
+  resolution: "@cloudflare/kv-asset-handler@npm:0.3.4"
   dependencies:
     mime: "npm:^3.0.0"
-  checksum: 10c0/03b1e1e36a53dae15031df2fe0e81ba944fd3cc282122c97042b23ee9c798cf7ed3b5e48eca947bec23d9723e32f3217e23d5de96a360114e2fc00093fdcfb99
+  checksum: 10c0/5895d28a4489f470acd217485e3ffbbe2e4a63b0772bb2925ee0f646b6ccce1fd224e07c4610cf514b5e7d0100053c81745a21c0af9a89a98fe16990a4e38ce7
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-darwin-64@npm:1.20240610.1":
-  version: 1.20240610.1
-  resolution: "@cloudflare/workerd-darwin-64@npm:1.20240610.1"
+"@cloudflare/workerd-darwin-64@npm:1.20240701.0":
+  version: 1.20240701.0
+  resolution: "@cloudflare/workerd-darwin-64@npm:1.20240701.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-darwin-arm64@npm:1.20240610.1":
-  version: 1.20240610.1
-  resolution: "@cloudflare/workerd-darwin-arm64@npm:1.20240610.1"
+"@cloudflare/workerd-darwin-arm64@npm:1.20240701.0":
+  version: 1.20240701.0
+  resolution: "@cloudflare/workerd-darwin-arm64@npm:1.20240701.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-linux-64@npm:1.20240610.1":
-  version: 1.20240610.1
-  resolution: "@cloudflare/workerd-linux-64@npm:1.20240610.1"
+"@cloudflare/workerd-linux-64@npm:1.20240701.0":
+  version: 1.20240701.0
+  resolution: "@cloudflare/workerd-linux-64@npm:1.20240701.0"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-linux-arm64@npm:1.20240610.1":
-  version: 1.20240610.1
-  resolution: "@cloudflare/workerd-linux-arm64@npm:1.20240610.1"
+"@cloudflare/workerd-linux-arm64@npm:1.20240701.0":
+  version: 1.20240701.0
+  resolution: "@cloudflare/workerd-linux-arm64@npm:1.20240701.0"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-windows-64@npm:1.20240610.1":
-  version: 1.20240610.1
-  resolution: "@cloudflare/workerd-windows-64@npm:1.20240610.1"
+"@cloudflare/workerd-windows-64@npm:1.20240701.0":
+  version: 1.20240701.0
+  resolution: "@cloudflare/workerd-windows-64@npm:1.20240701.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@cloudflare/workers-types@npm:^4.20240620.0":
-  version: 4.20240620.0
-  resolution: "@cloudflare/workers-types@npm:4.20240620.0"
-  checksum: 10c0/bd3bd43e4ebf5e66020d6d05ebafd42cefa1d25c7ec047750c88839aecc14f1d544c4dbe7c6f0a27cd40189e823f504b11b6e4620d6989e5afecbf7ac33baaad
+"@cloudflare/workers-types@npm:^4.20240712.0":
+  version: 4.20240712.0
+  resolution: "@cloudflare/workers-types@npm:4.20240712.0"
+  checksum: 10c0/4a6c283c98699474f64ad87d8795596ecfd8fd1c22cfdb9be534c8cebdfd3e212d8a5881ecd9631c0cfdd2c1bca5b274e1a66f225f128fb5722efc65fd4e7341
   languageName: node
   linkType: hard
 
@@ -247,6 +247,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hono/zod-validator@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@hono/zod-validator@npm:0.2.2"
+  peerDependencies:
+    hono: ">=3.9.0"
+    zod: ^3.19.1
+  checksum: 10c0/3d6d03d28287e6f05e4cf5b86f3fa5fa386429a4212881f7344fe93272a69732ca8dd98634eb51df434b002230d2be2f3c6822f3b1ab320676932583856b30a5
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -314,10 +324,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.17.5":
-  version: 4.17.5
-  resolution: "@types/lodash@npm:4.17.5"
-  checksum: 10c0/55924803ed853e72261512bd3eaf2c5b16558c3817feb0a3125ef757afe46e54b86f33d1960e40b7606c0ddab91a96f47966bf5e6006b7abfd8994c13b04b19b
+"@types/lodash@npm:^4.17.6":
+  version: 4.17.6
+  resolution: "@types/lodash@npm:4.17.6"
+  checksum: 10c0/3b197ac47af9443fee8c4719c5ffde527d7febc018b827d44a6bc2523c728c7adfdd25196fdcfe3eed827993e0c41a917d0da6e78938b18b2be94164789f1117
   languageName: node
   linkType: hard
 
@@ -330,7 +340,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^20.14.8":
+"@types/node@npm:*":
   version: 20.14.8
   resolution: "@types/node@npm:20.14.8"
   dependencies:
@@ -579,6 +589,13 @@ __metadata:
   version: 2.0.2
   resolution: "data-uri-to-buffer@npm:2.0.2"
   checksum: 10c0/341b6191ed65fa453e97a6d44db06082121ebc2ef3e6e096dfb6a1ebbc75e8be39d4199a5b4dba0f0efc43f2a3b2bcc276d85cf1407eba880eb09ebf17c3c31e
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "date-fns@npm:3.6.0"
+  checksum: 10c0/0b5fb981590ef2f8e5a3ba6cd6d77faece0ea7f7158948f2eaae7bbb7c80a8f63ae30b01236c2923cf89bb3719c33aeb150c715ea4fe4e86e37dcf06bed42fb6
   languageName: node
   linkType: hard
 
@@ -871,10 +888,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:^4.4.8":
-  version: 4.4.8
-  resolution: "hono@npm:4.4.8"
-  checksum: 10c0/35bef3e9ba51a17f730c31043c021833dd2737abc599e0d8754944d88362d086adc6e2ab308a045ffe9294e74906ad3255a2f0eb391f4e331bf5674ef9390ba3
+"hono@npm:^4.4.13":
+  version: 4.4.13
+  resolution: "hono@npm:4.4.13"
+  checksum: 10c0/213c09eafa4d82dfa6b6326fd37e8f0d17753ece62581ea849ec0eb87b0984a721389a0d8480f64dbef564d3fa49cc6031603374f326cb48ad4bc9eb9496e876
   languageName: node
   linkType: hard
 
@@ -1020,12 +1037,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jintr@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "jintr@npm:1.1.0"
+"jintr@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "jintr@npm:2.0.0"
   dependencies:
     acorn: "npm:^8.8.0"
-  checksum: 10c0/af233341ed7cc6374b64cb8a2c7f7434801e9814b8db6e116fe356985c2aa372538567c8f2d01d1b3754ddfb37da585dce2adbf63f335211cfab338ce939c698
+  checksum: 10c0/2f75338e7d20b5433bf8a8eefd19bad2ff0a433484d9c33d192febee70c34274fe2579f52e48550e1675de11c1d19653df5b4fc6a28fd0e32e7d2c77a09f6c75
   languageName: node
   linkType: hard
 
@@ -1088,9 +1105,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"miniflare@npm:3.20240610.1":
-  version: 3.20240610.1
-  resolution: "miniflare@npm:3.20240610.1"
+"miniflare@npm:3.20240701.0":
+  version: 3.20240701.0
+  resolution: "miniflare@npm:3.20240701.0"
   dependencies:
     "@cspotcode/source-map-support": "npm:0.8.1"
     acorn: "npm:^8.8.0"
@@ -1100,13 +1117,13 @@ __metadata:
     glob-to-regexp: "npm:^0.4.1"
     stoppable: "npm:^1.1.0"
     undici: "npm:^5.28.4"
-    workerd: "npm:1.20240610.1"
-    ws: "npm:^8.14.2"
+    workerd: "npm:1.20240701.0"
+    ws: "npm:^8.17.1"
     youch: "npm:^3.2.2"
     zod: "npm:^3.22.3"
   bin:
     miniflare: bootstrap.js
-  checksum: 10c0/1e6beaa0002a3571f31b7ea89291a6081b61a9ee9856fb6ce1f39fd55f474b62541068caeacbdf36ef7891c173bcf1265693a16cecaa27bc9171f2a15f9529bd
+  checksum: 10c0/c93cbdd3119be35d10654b129bef97ab3c8f2e9c2881ed759229e23aa4c96d1f61082477a7179695702c6aeeda7a0022a01377f2f40def940657e5ac68ca9e63
   languageName: node
   linkType: hard
 
@@ -1357,12 +1374,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "prettier@npm:3.3.2"
+"prettier@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "prettier@npm:3.3.3"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/39ed27d17f0238da6dd6571d63026566bd790d3d0edac57c285fbab525982060c8f1e01955fe38134ab10f0951a6076da37f015db8173c02f14bc7f0803a384c
+  checksum: 10c0/b85828b08e7505716324e4245549b9205c0cacb25342a030ba8885aba2039a115dbcf75a0b7ca3b37bc9d101ee61fab8113fc69ca3359f2a226f1ecc07ad2e26
   languageName: node
   linkType: hard
 
@@ -1479,14 +1496,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "s60tube@workspace:."
   dependencies:
-    "@cloudflare/workers-types": "npm:^4.20240620.0"
-    "@types/lodash": "npm:^4.17.5"
-    "@types/node": "npm:^20.14.8"
-    hono: "npm:^4.4.8"
+    "@cloudflare/workers-types": "npm:^4.20240712.0"
+    "@hono/zod-validator": "npm:^0.2.2"
+    "@types/lodash": "npm:^4.17.6"
+    hono: "npm:^4.4.13"
     lodash: "npm:^4.17.21"
-    prettier: "npm:^3.3.2"
-    wrangler: "npm:^3.61.0"
-    youtubei.js: "npm:latest"
+    prettier: "npm:^3.3.3"
+    wrangler: "npm:^3.64.0"
+    youtubei.js: "npm:^10.1.0"
+    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 
@@ -1768,15 +1786,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"workerd@npm:1.20240610.1":
-  version: 1.20240610.1
-  resolution: "workerd@npm:1.20240610.1"
+"workerd@npm:1.20240701.0":
+  version: 1.20240701.0
+  resolution: "workerd@npm:1.20240701.0"
   dependencies:
-    "@cloudflare/workerd-darwin-64": "npm:1.20240610.1"
-    "@cloudflare/workerd-darwin-arm64": "npm:1.20240610.1"
-    "@cloudflare/workerd-linux-64": "npm:1.20240610.1"
-    "@cloudflare/workerd-linux-arm64": "npm:1.20240610.1"
-    "@cloudflare/workerd-windows-64": "npm:1.20240610.1"
+    "@cloudflare/workerd-darwin-64": "npm:1.20240701.0"
+    "@cloudflare/workerd-darwin-arm64": "npm:1.20240701.0"
+    "@cloudflare/workerd-linux-64": "npm:1.20240701.0"
+    "@cloudflare/workerd-linux-arm64": "npm:1.20240701.0"
+    "@cloudflare/workerd-windows-64": "npm:1.20240701.0"
   dependenciesMeta:
     "@cloudflare/workerd-darwin-64":
       optional: true
@@ -1790,22 +1808,23 @@ __metadata:
       optional: true
   bin:
     workerd: bin/workerd
-  checksum: 10c0/f9404b903b29b8c10b15772142f40972787ba22d1108233a481969b065a62af64a0d331e2863d5b36d376ab939ddce4fa5448c4c1b5c2236bcf0c4aeff8cdb9c
+  checksum: 10c0/7b48be385c92f9d824e098880206c80a830856ad2cd168a13f4993a446bcb6917ea9b829570efcceb2167d760becf42cca4cc395ca679bec7c5b46125734da6a
   languageName: node
   linkType: hard
 
-"wrangler@npm:^3.61.0":
-  version: 3.61.0
-  resolution: "wrangler@npm:3.61.0"
+"wrangler@npm:^3.64.0":
+  version: 3.64.0
+  resolution: "wrangler@npm:3.64.0"
   dependencies:
-    "@cloudflare/kv-asset-handler": "npm:0.3.3"
+    "@cloudflare/kv-asset-handler": "npm:0.3.4"
     "@esbuild-plugins/node-globals-polyfill": "npm:^0.2.3"
     "@esbuild-plugins/node-modules-polyfill": "npm:^0.2.2"
     blake3-wasm: "npm:^2.1.5"
     chokidar: "npm:^3.5.3"
+    date-fns: "npm:^3.6.0"
     esbuild: "npm:0.17.19"
     fsevents: "npm:~2.3.2"
-    miniflare: "npm:3.20240610.1"
+    miniflare: "npm:3.20240701.0"
     nanoid: "npm:^3.3.3"
     path-to-regexp: "npm:^6.2.0"
     resolve: "npm:^1.22.8"
@@ -1815,7 +1834,7 @@ __metadata:
     unenv: "npm:unenv-nightly@1.10.0-1717606461.a117952"
     xxhash-wasm: "npm:^1.0.1"
   peerDependencies:
-    "@cloudflare/workers-types": ^4.20240605.0
+    "@cloudflare/workers-types": ^4.20240620.0
   dependenciesMeta:
     fsevents:
       optional: true
@@ -1825,7 +1844,7 @@ __metadata:
   bin:
     wrangler: bin/wrangler.js
     wrangler2: bin/wrangler.js
-  checksum: 10c0/323b07e50a2a31d6811a00d77b2083c942ebc050e3f7ae370e71160f9982b26ed926665d527c04ddad29d9ca0676a0bb7a52366365d4442ff572c197a6b137b3
+  checksum: 10c0/0c93c26eee0f2e9ee748f5459e831f26549f1f385ad82159a41a18b0f3951249437b000d013d28298bf3fa573c73545fc5bdb4eeb01f698c93f6ce9ab1844750
   languageName: node
   linkType: hard
 
@@ -1851,7 +1870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.14.2":
+"ws@npm:^8.17.1":
   version: 8.17.1
   resolution: "ws@npm:8.17.1"
   peerDependencies:
@@ -1891,18 +1910,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"youtubei.js@npm:latest":
-  version: 10.0.0
-  resolution: "youtubei.js@npm:10.0.0"
+"youtubei.js@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "youtubei.js@npm:10.1.0"
   dependencies:
-    jintr: "npm:^1.1.0"
+    jintr: "npm:^2.0.0"
     tslib: "npm:^2.5.0"
     undici: "npm:^5.19.1"
-  checksum: 10c0/6bb2edc7dff35adcbd93a4b9b3142ed6514f6c1e3389cf5b8f922fbe65d8d680eeaceb92e1ee74b0be864ec9d54dc35c66f68e8d351151b8fc086cba3b39958a
+  checksum: 10c0/82674274ae966bdf029586198af97eccb45e17fa833b00acaaed972b1b56d77e695a176ec1915cee7b3eec13aec21721345114c6889bb335f017df7b19b42cc8
   languageName: node
   linkType: hard
 
-"zod@npm:^3.22.3":
+"zod@npm:^3.22.3, zod@npm:^3.23.8":
   version: 3.23.8
   resolution: "zod@npm:3.23.8"
   checksum: 10c0/8f14c87d6b1b53c944c25ce7a28616896319d95bc46a9660fe441adc0ed0a81253b02b5abdaeffedbeb23bdd25a0bf1c29d2c12dd919aef6447652dd295e3e69

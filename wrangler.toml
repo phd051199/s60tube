@@ -1,12 +1,17 @@
-name = "s60yt"
+name = "youtube"
 compatibility_date = "2023-12-01"
+main = "src/index.ts"
+
+[placement]
+mode = "smart"
 
 # [vars]
 # MY_VAR = "my-variable"
 
-# [[kv_namespaces]]
-# binding = "MY_KV_NAMESPACE"
-# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+[[kv_namespaces]]
+binding = "LINK"
+id = "0528c741f1d845699ee4a9ebb2886839"
+preview_id = "0528c741f1d845699ee4a9ebb2886839"
 
 # [[r2_buckets]]
 # binding = "MY_BUCKET"

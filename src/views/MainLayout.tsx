@@ -1,18 +1,4 @@
-import type { FC } from 'hono/jsx';
-
-const Layout: FC = (props) => {
-  return (
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>S60 Tube - {props.title}</title>
-      </head>
-
-      <body style={styles.body}>{props.children}</body>
-    </html>
-  );
-};
+import { jsxRenderer } from 'hono/jsx-renderer';
 
 const styles = {
   body: {
@@ -24,4 +10,29 @@ const styles = {
   }
 };
 
-export default Layout;
+export default jsxRenderer(({ children, title }) => {
+  return (
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <link rel="shortcut icon" href="https://hono.dev/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+          name="description"
+          content="Bringing YouTube back to Nokia S60 Devices"
+        />
+        <meta name="keywords" content="S60 Tube" />
+        <meta property="og:title" content="S60 Tube" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://hono.dev/favicon.ico" />
+        <meta
+          property="og:description"
+          content="Bringing YouTube back to Nokia S60 Devices"
+        />
+        <title>S60 Tube - {title}</title>
+      </head>
+
+      <body style={styles.body}>{children}</body>
+    </html>
+  );
+});

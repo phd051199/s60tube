@@ -1,9 +1,8 @@
 import { memo, type FC } from 'hono/jsx';
-import MainLayout from './MainLayout';
 
 const HomePage: FC = memo(() => {
   return (
-    <MainLayout title="Home">
+    <main>
       <div
         style={{
           display: 'flex',
@@ -41,7 +40,7 @@ const HomePage: FC = memo(() => {
           Search
         </button>
       </form>
-    </MainLayout>
+    </main>
   );
 });
 
