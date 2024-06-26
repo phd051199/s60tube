@@ -30,10 +30,6 @@ const SearchBar: FC = ({ q }) => {
 };
 
 const Video: FC = ({ item }) => {
-  if (!get(item, 'short_view_count.text')) {
-    console.log(item);
-  }
-
   return (
     <div style={styles.videoContainer}>
       <a href={'/video/' + get(item, 'id')}>

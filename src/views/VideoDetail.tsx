@@ -7,10 +7,7 @@ const StreamingInstructions: FC = () => {
       <h2 style={styles.h2}>Streaming</h2>
       <h4 style={styles.h4}>
         Please copy the link below and use
-        <a
-          href="https://github.com/phd051199/s60tube/raw/main/coreplayer/coreplayer.sis"
-          style={styles.link}
-        >
+        <a href="/coreplayer" style={styles.link}>
           <span> CorePlayer </span>
         </a>
         to play it.

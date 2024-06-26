@@ -1,19 +1,24 @@
-import { Hono } from 'hono/tiny';
+import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { validator } from 'hono/validator';
-import { Innertube } from 'youtubei.js/cf-worker';
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
 
 import HomePage from './views/Home';
 import SearchPage from './views/Search';
 import DetailPage from './views/VideoDetail';
-import reject from 'lodash/reject';
-import get from 'lodash/get';
+
+import {
+  createInnertubeInstance,
+  filterData,
+  signToken,
+  signVideoLink,
+  vIdSchema
+} from './utils';
+import { createMiddleware } from 'hono/factory';
+import { verify } from 'hono/jwt';
+import { message } from './constants';
 
 const app = new Hono<Env>();
-
-const idValidator = validator('query', (value, c) => {
-  if (!value.v) return c.text('Missing video ID', 400);
-});
 
 // Routes
 app.get('/', (c) => c.html(<HomePage />));
@@ -22,71 +27,80 @@ app.get('/search', async (c) => {
   const q = c.req.query('q');
   if (!q) return c.redirect('/');
 
-  const yt = await Innertube.create({
-    lang: 'vi',
-    location: 'VN'
-  });
-
+  const yt = await createInnertubeInstance();
   const result = await yt.search(q, {
     type: 'video',
     sort_by: 'relevance'
   });
-  const data = reject(
-    result.videos,
-    (item) =>
-      !get(item, 'duration.seconds') ||
-      get(item, 'type').includes('Reel') ||
-      get(item, 'title.text', '').includes('#short')
-  );
 
-  return c.html(<SearchPage data={data} q={q} />);
+  return c.html(<SearchPage data={filterData(result)} q={q} />);
 });
 
-app.get('/video/:id', (c) => {
-  const url = `http://${c.req.header('host')}/watch?v=${c.req.param('id')}`;
-  return c.html(<DetailPage url={url} />);
-});
+app.get(
+  '/video/:id',
+  zValidator(
+    'param',
+    z.object({
+      id: vIdSchema
+    })
+  ),
+  async (c) => {
+    const host = c.req.header('host');
+    const videoId = c.req.valid('param').id;
 
-app.get('/info', idValidator, async (c) => {
-  const yt = await Innertube.create({
-    lang: 'vi',
-    location: 'VN'
-  });
+    await signVideoLink(videoId, c);
+    const token = await signToken(videoId, c.env.JWT_SECRET);
 
-  const info = await yt.getBasicInfo(c.req.query('v')!);
-
-  return c.json(info);
-});
-
-app.get('/watch', idValidator, async (c) => {
-  const yt = await Innertube.create({
-    lang: 'vi',
-    location: 'VN'
-  });
-
-  const streaming = await yt.getStreamingData(c.req.query('v')!, {
-    type: 'video+audio',
-    quality: '360p'
-  });
-  const url = streaming.decipher(yt.session.player);
-
-  if (!url) {
-    return c.text('Video not found', 404);
+    return c.html(
+      <DetailPage url={`http://${host}/watch?v=${videoId}&t=${token}`} />
+    );
   }
-  return fetch(url, {
-    headers: c.req.header()
-  });
-});
+);
+
+app.get(
+  '/watch',
+  createMiddleware(async (c, next) => {
+    if (!c.req.header('range')) {
+      await verify(c.req.query('t')!, c.env.JWT_SECRET).catch(() => {
+        throw new HTTPException(401, {
+          message: message.INVALID_TOKEN
+        });
+      });
+    }
+
+    await next();
+  }),
+  async (c) => {
+    const videoId = c.req.query('v')!;
+
+    const url =
+      (await c.env.LINK.get(videoId, {
+        cacheTtl: 60 * 60 * 1
+      })) ?? (await signVideoLink(videoId, c));
+
+    return fetch(url!, {
+      headers: c.req.header()
+    });
+  }
+);
+
+app.get('/coreplayer', (c) => c.redirect(c.env.COREPLAYER_URL));
 
 app.get('/robot.txt', (c) => c.text('User-agent: *\nAllow: /'));
 
 // Error handling
-app.notFound((c) => c.text('Not Found', 404));
-app.onError((err, c) => {
+app.notFound(() => {
+  throw new HTTPException(404, { message: 'Not found' });
+});
+
+app.onError((err) => {
   if (err instanceof HTTPException) {
     return err.getResponse();
   }
-  return c.text(String(err), 500);
+  return new HTTPException(500, {
+    message: 'Internal server error',
+    cause: err
+  }).getResponse();
 });
 
 export default app satisfies ExportedHandler<Env>;
