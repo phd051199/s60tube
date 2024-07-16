@@ -35,7 +35,7 @@ const Video: FC = ({ item }) => {
         <div>
           <div style={{ display: 'flex' }}>
             <img
-              src={`/proxy?url=https://img.youtube.com/vi/${get(item, 'id')}/default.jpg`}
+              src={`https://img.youtube.com/vi/${get(item, 'id')}/default.jpg`}
               alt={get(item, 'id')}
               style={styles.thumbnail}
             />

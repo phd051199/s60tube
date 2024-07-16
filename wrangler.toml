@@ -13,6 +13,11 @@ binding = "LINK"
 id = "0528c741f1d845699ee4a9ebb2886839"
 preview_id = "0528c741f1d845699ee4a9ebb2886839"
 
+[[kv_namespaces]]
+binding = "INVIDIOUS_API"
+id = "f9267fad5ccf4dc3bd9d250e77cd673d"
+preview_id = "f9267fad5ccf4dc3bd9d250e77cd673d"
+
 # [[r2_buckets]]
 # binding = "MY_BUCKET"
 # bucket_name = "my-bucket"

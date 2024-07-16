@@ -7,6 +7,7 @@ declare global {
       JWT_SECRET: string;
       COREPLAYER_URL: string;
       LINK: KVNamespace<string>;
+      INVIDIOUS_API: KVNamespace<string>;
     };
   };
 }

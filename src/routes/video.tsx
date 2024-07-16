@@ -6,12 +6,11 @@ import { verify } from 'hono/jwt';
 import { z } from 'zod';
 import { message } from '../constants';
 import {
-  filterData,
-  vIdSchema,
-  getDownloadLink,
-  signToken,
   createInnertube,
-  getDownloadLinkInvidious
+  filterData,
+  getDownloadLinkInvidious,
+  signToken,
+  vIdSchema
 } from '../utils';
 import MainLayout from '../views/MainLayout';
 import SearchPage from '../views/Search';
@@ -50,11 +49,14 @@ router.get(
     const { id } = c.req.valid('param');
     let invidious = '';
 
-    try {
-      await getDownloadLink(id, c);
-    } catch {
-      invidious = await getDownloadLinkInvidious(id, c);
-    }
+    // try {
+    //   await getDownloadLink(id, c);
+    // } catch (e) {
+    //   console.log(e);
+
+    // }
+    invidious = await getDownloadLinkInvidious(id, c);
+
     const token = await signToken(id, c.env.JWT_SECRET);
     return c.render(
       <DetailPage
