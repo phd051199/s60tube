@@ -1,9 +1,9 @@
 import { sign } from 'hono/jwt';
 import { z } from 'zod';
-import { invidiousDomains, message } from '../constants';
+import { message } from '../constants';
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { reject, get } from 'lodash';
+import _ from 'lodash';
 import Innertube, { ClientType, InnertubeConfig } from 'youtubei.js/cf-worker';
 
 export const signToken = (
@@ -17,13 +17,13 @@ export const vIdSchema = z.string().regex(/^[a-zA-Z0-9_-]{11}$/, {
 });
 
 export const filterData = (data: any) => {
-  return reject(
+  return _.reject(
     data.videos,
     (item) =>
-      !get(item, 'id') ||
-      !get(item, 'duration.seconds') ||
-      get(item, 'type').includes('Reel') ||
-      get(item, 'title.text', '').includes('#short')
+      !_.get(item, 'id') ||
+      !_.get(item, 'duration.seconds') ||
+      _.get(item, 'type').includes('Reel') ||
+      _.get(item, 'title.text', '').includes('#short')
   );
 };
 
@@ -56,10 +56,33 @@ export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
   });
 };
 
+const getInvidiousApis = async (c: Context<Env>) => {
+  const domains = await c.env.INVIDIOUS_API.get<{}[]>('domains', 'json');
+  if (domains?.length) {
+    return domains;
+  }
+  const response = await fetch(
+    'https://api.invidious.io/instances.json?sort_by=type,health'
+  );
+
+  const json = await response.json<{}[]>();
+  const data = _(json)
+    .filter((item) => item[1].stats)
+    .map((item) => item[0])
+    .value();
+
+  await c.env.INVIDIOUS_API.put('domains', JSON.stringify(data), {
+    expirationTtl: 60 * 60 * 1
+  });
+
+  return data;
+};
+
 export const getDownloadLinkInvidious = async (
   videoId: string,
   c: Context<Env>
 ) => {
+  const invidiousDomains = await getInvidiousApis(c);
   let needFetch = true;
   let index = 0;
 

@@ -9,16 +9,16 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.2.2",
-    "hono": "^4.4.13",
+    "hono": "^4.5.0",
     "lodash": "^4.17.21",
     "youtubei.js": "^10.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240712.0",
-    "@types/lodash": "^4.17.6",
+    "@types/lodash": "^4.17.7",
     "prettier": "^3.3.3",
-    "wrangler": "^3.64.0"
+    "wrangler": "^3.65.0"
   },
   "packageManager": "yarn@4.3.1"
 }
