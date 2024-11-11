@@ -8,6 +8,7 @@ import { message } from '../constants';
 import {
   createInnertube,
   filterData,
+  getDownloadLink,
   getDownloadLinkInvidious,
   signToken,
   vIdSchema
@@ -49,15 +50,13 @@ router.get(
     const { id } = c.req.valid('param');
     let invidious = '';
 
-    // try {
-    //   await getDownloadLink(id, c);
-    // } catch (e) {
-    //   console.log(e);
+    try {
+      await getDownloadLink(id, c);
+    } catch (e) {
+      invidious = await getDownloadLinkInvidious(id, c);
+    }
 
-    // }
-    invidious = await getDownloadLinkInvidious(id, c);
-
-    const token = await signToken(id, c.env.JWT_SECRET);
+    const token = await signToken(id, process.env.JWT_SECRET!);
     return c.render(
       <DetailPage
         url={`http://${host}/watch?v=${id}&t=${token}`}
@@ -76,7 +75,7 @@ router.get(
     const { t } = c.req.query();
     const range = c.req.header('range');
     if (!range) {
-      await verify(t, c.env.JWT_SECRET).catch(() => {
+      await verify(t, process.env.JWT_SECRET!).catch(() => {
         throw new HTTPException(401, {
           message: message.INVALID_TOKEN
         });
@@ -86,13 +85,15 @@ router.get(
   }),
   async (c) => {
     const { v } = c.req.query();
-    const url = await c.env.LINK.get(v, {
-      cacheTtl: 60 * 60 * 1
-    });
+    const url = await Bun.file(`links/${v}`).text();
 
-    return fetch(url!, {
+    const response = await Bun.fetch(url, {
       headers: c.req.header()
     });
+
+    console.log(response);
+
+    return response;
   }
 );
 

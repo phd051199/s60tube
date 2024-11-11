@@ -12,9 +12,12 @@ app.get('/proxy', (c) =>
     headers: c.req.header()
   })
 );
-app.get('/coreplayer', (c) => c.redirect(c.env.COREPLAYER_URL));
+app.get('/coreplayer', (c) => c.redirect(process.env.COREPLAYER_URL!));
 app.get('/robot.txt', (c) => c.text('User-agent: *\nAllow: /'));
 
 useErrorHandler(app);
 
-export default app satisfies ExportedHandler<Env>;
+export default {
+  port: 3003,
+  fetch: app.fetch
+};

@@ -1,10 +1,10 @@
-import { sign } from 'hono/jwt';
-import { z } from 'zod';
-import { message } from '../constants';
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
+import { sign } from 'hono/jwt';
 import _ from 'lodash';
-import Innertube, { ClientType } from 'youtubei.js/cf-worker';
+import Innertube from 'youtubei.js/cf-worker';
+import { z } from 'zod';
+import { message } from '../constants';
 
 export const signToken = (
   sub: string,
@@ -51,29 +51,28 @@ export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
     throw new HTTPException(404, { message: message.VIDEO_NOT_FOUND });
   }
 
-  await c.env.LINK.put(videoId, url, {
-    expirationTtl: 60 * 60 * 6
-  });
+  await Bun.write(`links/${videoId}`, url);
 };
 
 const getInvidiousApis = async (c: Context<Env>) => {
-  const domains = await c.env.INVIDIOUS_API.get<{}[]>('domains', 'json');
-  if (domains?.length) {
-    return domains;
-  }
+  try {
+    const domains = await Bun.file('invidious_domains.json').json();
+    if (domains?.length) {
+      return domains;
+    }
+  } catch {}
+
   const response = await fetch(
     'https://api.invidious.io/instances.json?sort_by=type,health'
   );
 
-  const json = await response.json<{}[]>();
+  const json = (await response.json()) as [string, { stats?: unknown }][];
   const data = _(json)
-    .filter((item) => item[1].stats)
+    .filter((item): item is [string, { stats: unknown }] => !!item[1].stats)
     .map((item) => item[0])
     .value();
 
-  await c.env.INVIDIOUS_API.put('domains', JSON.stringify(data), {
-    expirationTtl: 60 * 60 * 1
-  });
+  await Bun.write('invidious_domains.json', JSON.stringify(data));
 
   if (!data || !data.length) {
     return ['invidious.duyph.xyz'];
@@ -102,9 +101,7 @@ export const getDownloadLinkInvidious = async (
       const url = headers.get('location');
       if (!url) throw new Error('No location header found');
 
-      await c.env.LINK.put(videoId, url, {
-        expirationTtl: 60 * 60 * 6
-      });
+      await Bun.write(`links/${videoId}`, url);
       needFetch = false;
     } catch (error) {
       index++;
