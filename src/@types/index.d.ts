@@ -1,8 +1,8 @@
-import type { Innertube } from 'youtubei.js/cf-worker';
-
 declare global {
   type Env = {
-    Variables: {};
+    Variables: {
+      innertube: Innertube;
+    };
     Bindings: {
       JWT_SECRET: string;
       COREPLAYER_URL: string;

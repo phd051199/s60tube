@@ -1,18 +1,10 @@
 import { zValidator } from '@hono/zod-validator';
+import { readFile } from 'fs/promises';
 import { Hono } from 'hono';
-import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 import { verify } from 'hono/jwt';
 import { z } from 'zod';
-import { message } from '../constants';
-import {
-  createInnertube,
-  filterData,
-  getDownloadLink,
-  getDownloadLinkInvidious,
-  signToken,
-  vIdSchema
-} from '../utils';
+import { filterData, getDownloadLink, signToken, vIdSchema } from '../utils';
 import MainLayout from '../views/MainLayout';
 import SearchPage from '../views/Search';
 import DetailPage from '../views/VideoDetail';
@@ -23,10 +15,7 @@ router.get('/search', MainLayout, async (c) => {
   const q = c.req.query('q');
   if (!q) return c.redirect('/');
 
-  const innertube = await createInnertube({
-    retrieve_player: false
-  });
-  const result = await innertube.search(q, {
+  const result = await c.get('innertube').search(q, {
     type: 'video',
     sort_by: 'relevance'
   });
@@ -50,11 +39,7 @@ router.get(
     const { id } = c.req.valid('param');
     let invidious = '';
 
-    try {
-      await getDownloadLink(id, c);
-    } catch (e) {
-      invidious = await getDownloadLinkInvidious(id, c);
-    }
+    getDownloadLink(id, c);
 
     const token = await signToken(id, process.env.JWT_SECRET!);
     return c.render(
@@ -69,31 +54,69 @@ router.get(
   }
 );
 
+const EXCLUDED_HEADERS = new Set([
+  'host',
+  'connection',
+  'content-length',
+  'cf-ray',
+  'cf-connecting-ip'
+]);
+
+// Cache video URL in memory
+const videoUrlCache = new Map();
+
 router.get(
   '/watch',
-  createMiddleware(async (c, next) => {
-    const { t } = c.req.query();
-    const range = c.req.header('range');
-    if (!range) {
-      await verify(t, process.env.JWT_SECRET!).catch(() => {
-        throw new HTTPException(401, {
-          message: message.INVALID_TOKEN
-        });
+  async (c, next) => {
+    try {
+      const { t } = c.req.query();
+      const range = c.req.header('range');
+
+      if (!range && t) {
+        await verify(t, process.env.JWT_SECRET!);
+      }
+
+      await next();
+    } catch (error) {
+      throw new HTTPException(401, {
+        message:
+          error instanceof Error ? error.message : 'Authentication failed'
       });
     }
-    await next();
-  }),
+  },
   async (c) => {
     const { v } = c.req.query();
-    const url = await Bun.file(`links/${v}`).text();
+    if (!v) {
+      throw new HTTPException(400, { message: 'Missing video ID' });
+    }
 
-    const response = await Bun.fetch(url, {
-      headers: c.req.header()
-    });
+    try {
+      let videoUrl = videoUrlCache.get(v);
+      if (!videoUrl) {
+        videoUrl = await readFile(`links/${v}`, 'utf-8');
+        videoUrlCache.set(v, videoUrl);
+      }
 
-    console.log(response);
+      const headers = new Headers({
+        Connection: 'keep-alive'
+      });
 
-    return response;
+      const reqHeaders = c.req.header();
+
+      for (const [key, value] of Object.entries(reqHeaders)) {
+        if (!EXCLUDED_HEADERS.has(key.toLowerCase()) && value) {
+          headers.set(key, value);
+        }
+      }
+
+      const response = await fetch(videoUrl, {
+        headers
+      });
+
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
   }
 );
 

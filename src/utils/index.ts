@@ -1,8 +1,8 @@
+import { readFile, writeFile } from 'fs/promises';
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { sign } from 'hono/jwt';
 import _ from 'lodash';
-import Innertube from 'youtubei.js/cf-worker';
 import { z } from 'zod';
 import { message } from '../constants';
 
@@ -27,36 +27,27 @@ export const filterData = (data: any) => {
   );
 };
 
-export const createInnertube = async (config = {}) => {
-  return Innertube.create({
-    ...config,
-    lang: 'vi',
-    location: 'VN',
-    timezone: 'Asia/Ho_Chi_Minh'
-  });
-};
-
 export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
-  const innertube = await createInnertube();
-
-  const info = await innertube.getBasicInfo(videoId);
+  const info = await c.get('innertube').getBasicInfo(videoId);
   const url = info
     .chooseFormat({
       type: 'video+audio',
       quality: '360p'
     })
-    ?.decipher(innertube.session.player);
+    ?.decipher(c.get('innertube').session.player);
 
   if (!url) {
     throw new HTTPException(404, { message: message.VIDEO_NOT_FOUND });
   }
 
-  await Bun.write(`links/${videoId}`, url);
+  await writeFile(`links/${videoId}`, url);
 };
 
 const getInvidiousApis = async (c: Context<Env>) => {
   try {
-    const domains = await Bun.file('invidious_domains.json').json();
+    const domains = JSON.parse(
+      await readFile('invidious_domains.json', 'utf-8')
+    );
     if (domains?.length) {
       return domains;
     }
@@ -72,7 +63,7 @@ const getInvidiousApis = async (c: Context<Env>) => {
     .map((item) => item[0])
     .value();
 
-  await Bun.write('invidious_domains.json', JSON.stringify(data));
+  await writeFile('invidious_domains.json', JSON.stringify(data));
 
   if (!data || !data.length) {
     return ['invidious.duyph.xyz'];
@@ -101,7 +92,7 @@ export const getDownloadLinkInvidious = async (
       const url = headers.get('location');
       if (!url) throw new Error('No location header found');
 
-      await Bun.write(`links/${videoId}`, url);
+      await writeFile(`links/${videoId}`, url);
       needFetch = false;
     } catch (error) {
       index++;

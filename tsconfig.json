@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
+    "target": "ES2021",
+    "module": "CommonJS",
+    "strict": false,
     "skipLibCheck": true,
-    "lib": ["ESNext"],
-    "types": ["bun", "./src/@types/index.d.ts"],
+    "types": ["@types/node", "./src/@types/index.d.ts"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "outDir": "dist"
   }
 }
