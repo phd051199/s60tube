@@ -1,5 +1,3 @@
-import { serve } from '@hono/node-server';
-import 'dotenv/config';
 import { Hono } from 'hono';
 import Innertube from 'youtubei.js';
 import { useErrorHandler } from './exception';
@@ -32,7 +30,7 @@ const run = async () => {
 
   useErrorHandler(app);
 
-  serve({
+  Bun.serve({
     fetch: app.fetch,
     port: 3003
   });

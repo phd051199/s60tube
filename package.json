@@ -2,25 +2,21 @@
   "name": "s60tube",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir dist",
+    "start": "bun run dist/index.js",
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@hono/node-server": "^1.13.6",
     "@hono/zod-validator": "^0.4.1",
-    "dotenv": "^16.4.5",
-    "hono": "^4.6.9",
+    "hono": "^4.6.10",
     "lodash": "^4.17.21",
     "youtubei.js": "^11.0.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/bun": "^1.1.13",
     "@types/lodash": "^4.17.13",
-    "@types/node": "^20.11.5",
-    "prettier": "^3.3.3",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.3.3"
+    "prettier": "^3.3.3"
   }
 }

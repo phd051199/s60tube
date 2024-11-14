@@ -1,4 +1,3 @@
-import { readFile, writeFile } from 'fs/promises';
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { sign } from 'hono/jwt';
@@ -45,9 +44,7 @@ export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
 
 const getInvidiousApis = async (c: Context<Env>) => {
   try {
-    const domains = JSON.parse(
-      await readFile('invidious_domains.json', 'utf-8')
-    );
+    const domains = JSON.parse(await Bun.file('invidious_domains.json').text());
     if (domains?.length) {
       return domains;
     }
@@ -63,7 +60,7 @@ const getInvidiousApis = async (c: Context<Env>) => {
     .map((item) => item[0])
     .value();
 
-  await writeFile('invidious_domains.json', JSON.stringify(data));
+  await Bun.write('invidious_domains.json', JSON.stringify(data));
 
   if (!data || !data.length) {
     return ['invidious.duyph.xyz'];
@@ -92,7 +89,7 @@ export const getDownloadLinkInvidious = async (
       const url = headers.get('location');
       if (!url) throw new Error('No location header found');
 
-      await writeFile(`links/${videoId}`, url);
+      await Bun.write(`links/${videoId}`, url);
       needFetch = false;
     } catch (error) {
       index++;
