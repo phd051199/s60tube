@@ -65,9 +65,9 @@ const DetailPage: FC = (props) => {
       <input style={styles.input} value={props.url} />
       <DownloadSection url={props.url} />
       {!!props.invidious ? (
-        <p>From: {props.invidious}</p>
+        <p>Provided by: {props.invidious}</p>
       ) : (
-        <p>From: Cloudflare workers</p>
+        <p>Provided by: Duy Pham</p>
       )}
     </main>
   );

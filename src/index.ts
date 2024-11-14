@@ -12,7 +12,8 @@ const run = async () => {
   const innertube = await Innertube.create({
     lang: 'vi',
     location: 'VN',
-    timezone: 'Asia/Ho_Chi_Minh'
+    timezone: 'Asia/Ho_Chi_Minh',
+    fetch: fetch
   });
 
   app.use(async (c, next) => {

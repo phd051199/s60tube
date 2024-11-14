@@ -1,5 +1,4 @@
 import { zValidator } from '@hono/zod-validator';
-import { readFile } from 'fs/promises';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { verify } from 'hono/jwt';
@@ -10,6 +9,15 @@ import SearchPage from '../views/Search';
 import DetailPage from '../views/VideoDetail';
 
 const router = new Hono<Env>();
+class CacheMap extends Map {
+  maxSize: number;
+
+  constructor(maxSize: number) {
+    super();
+    this.maxSize = maxSize;
+  }
+}
+const videoUrlCache = new CacheMap(10000);
 
 router.get('/search', MainLayout, async (c) => {
   const q = c.req.query('q');
@@ -37,16 +45,12 @@ router.get(
   async (c) => {
     const host = c.req.header('host');
     const { id } = c.req.valid('param');
-    let invidious = '';
 
-    getDownloadLink(id, c);
-
+    videoUrlCache.set(id, await getDownloadLink(id, c));
     const token = await signToken(id, process.env.JWT_SECRET!);
+
     return c.render(
-      <DetailPage
-        url={`http://${host}/watch?v=${id}&t=${token}`}
-        invidious={invidious}
-      />,
+      <DetailPage url={`http://${host}/watch?v=${id}&t=${token}`} />,
       {
         title: 'Video Detail'
       }
@@ -61,9 +65,6 @@ const EXCLUDED_HEADERS = new Set([
   'cf-ray',
   'cf-connecting-ip'
 ]);
-
-// Cache video URL in memory
-const videoUrlCache = new Map();
 
 router.get(
   '/watch',
@@ -91,25 +92,17 @@ router.get(
     }
 
     try {
-      let videoUrl = videoUrlCache.get(v);
-      if (!videoUrl) {
-        videoUrl = await readFile(`links/${v}`, 'utf-8');
-        videoUrlCache.set(v, videoUrl);
-      }
-
       const headers = new Headers({
         Connection: 'keep-alive'
       });
 
-      const reqHeaders = c.req.header();
-
-      for (const [key, value] of Object.entries(reqHeaders)) {
+      for (const [key, value] of Object.entries(c.req.header())) {
         if (!EXCLUDED_HEADERS.has(key.toLowerCase()) && value) {
           headers.set(key, value);
         }
       }
 
-      const response = await fetch(videoUrl, {
+      const response = await fetch(videoUrlCache.get(v), {
         headers
       });
 

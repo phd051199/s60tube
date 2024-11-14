@@ -40,7 +40,7 @@ export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
     throw new HTTPException(404, { message: message.VIDEO_NOT_FOUND });
   }
 
-  await writeFile(`links/${videoId}`, url);
+  return url;
 };
 
 const getInvidiousApis = async (c: Context<Env>) => {
@@ -51,7 +51,7 @@ const getInvidiousApis = async (c: Context<Env>) => {
     if (domains?.length) {
       return domains;
     }
-  } catch {}
+  } catch { }
 
   const response = await fetch(
     'https://api.invidious.io/instances.json?sort_by=type,health'
