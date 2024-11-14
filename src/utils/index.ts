@@ -3,7 +3,7 @@ import { HTTPException } from 'hono/http-exception';
 import { sign } from 'hono/jwt';
 import _ from 'lodash';
 import { z } from 'zod';
-import { message } from '../constants';
+import { message } from '../core/constants';
 
 export const signToken = (
   sub: string,
@@ -42,65 +42,3 @@ export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
   return url;
 };
 
-const getInvidiousApis = async (c: Context<Env>) => {
-  try {
-    const domains = JSON.parse(await Bun.file('invidious_domains.json').text());
-    if (domains?.length) {
-      return domains;
-    }
-  } catch { }
-
-  const response = await fetch(
-    'https://api.invidious.io/instances.json?sort_by=type,health'
-  );
-
-  const json = (await response.json()) as [string, { stats?: unknown }][];
-  const data = _(json)
-    .filter((item): item is [string, { stats: unknown }] => !!item[1].stats)
-    .map((item) => item[0])
-    .value();
-
-  await Bun.write('invidious_domains.json', JSON.stringify(data));
-
-  if (!data || !data.length) {
-    return ['invidious.duyph.xyz'];
-  }
-
-  return data;
-};
-
-export const getDownloadLinkInvidious = async (
-  videoId: string,
-  c: Context<Env>
-) => {
-  const invidiousDomains = await getInvidiousApis(c);
-  let needFetch = true;
-  let index = 0;
-
-  while (needFetch && index < invidiousDomains.length) {
-    const host = invidiousDomains[index];
-    try {
-      const { headers } = await fetch(
-        `https://${host}/latest_version?id=${videoId}&itag=18`,
-        {
-          redirect: 'manual'
-        }
-      );
-      const url = headers.get('location');
-      if (!url) throw new Error('No location header found');
-
-      await Bun.write(`links/${videoId}`, url);
-      needFetch = false;
-    } catch (error) {
-      index++;
-    }
-  }
-
-  if (needFetch) {
-    throw new HTTPException(500, {
-      message: 'Failed to fetch download link from all domains'
-    });
-  }
-
-  return invidiousDomains[index];
-};

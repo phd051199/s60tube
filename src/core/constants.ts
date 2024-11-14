@@ -4,3 +4,11 @@ export const message = {
   VIDEO_NOT_FOUND: 'Video not found',
   INVALID_CERTIFICATE: 'Invalid certificate'
 };
+
+export const EXCLUDED_HEADERS = new Set([
+  'host',
+  'connection',
+  'content-length',
+  'cf-ray',
+  'cf-connecting-ip'
+]);

@@ -4,7 +4,10 @@
     "module": "CommonJS",
     "strict": false,
     "skipLibCheck": true,
-    "types": ["bun", "./src/@types/index.d.ts"],
+    "types": [
+      "@types/node",
+      "./src/@types/index.d.ts"
+    ],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "noImplicitAny": false,

@@ -1,6 +1,8 @@
+import { serve } from '@hono/node-server';
+import 'dotenv/config';
 import { Hono } from 'hono';
 import Innertube from 'youtubei.js';
-import { useErrorHandler } from './exception';
+import { useErrorHandler } from './core/exception';
 import home from './routes/home';
 import video from './routes/video';
 
@@ -11,7 +13,6 @@ const run = async () => {
     lang: 'vi',
     location: 'VN',
     timezone: 'Asia/Ho_Chi_Minh',
-    fetch: fetch
   });
 
   app.use(async (c, next) => {
@@ -30,7 +31,7 @@ const run = async () => {
 
   useErrorHandler(app);
 
-  Bun.serve({
+  serve({
     fetch: app.fetch,
     port: 3003
   });

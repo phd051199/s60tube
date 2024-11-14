@@ -3,21 +3,14 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { verify } from 'hono/jwt';
 import { z } from 'zod';
+import { videoUrlCache } from '../core/cache';
+import { EXCLUDED_HEADERS } from '../core/constants';
 import { filterData, getDownloadLink, signToken, vIdSchema } from '../utils';
 import MainLayout from '../views/MainLayout';
 import SearchPage from '../views/Search';
 import DetailPage from '../views/VideoDetail';
 
 const router = new Hono<Env>();
-class CacheMap extends Map {
-  maxSize: number;
-
-  constructor(maxSize: number) {
-    super();
-    this.maxSize = maxSize;
-  }
-}
-const videoUrlCache = new CacheMap(10000);
 
 router.get('/search', MainLayout, async (c) => {
   const q = c.req.query('q');
@@ -57,14 +50,6 @@ router.get(
     );
   }
 );
-
-const EXCLUDED_HEADERS = new Set([
-  'host',
-  'connection',
-  'content-length',
-  'cf-ray',
-  'cf-connecting-ip'
-]);
 
 router.get(
   '/watch',
