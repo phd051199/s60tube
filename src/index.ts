@@ -1,8 +1,9 @@
 import { serve } from '@hono/node-server';
 import 'dotenv/config';
 import { Hono } from 'hono';
-import Innertube from 'youtubei.js';
+import Innertube, { Log, UniversalCache } from 'youtubei.js';
 import { useErrorHandler } from './core/exception';
+import { customLogger } from './core/logger';
 import home from './routes/home';
 import video from './routes/video';
 
@@ -13,6 +14,14 @@ const run = async () => {
     lang: 'vi',
     location: 'VN',
     timezone: 'Asia/Ho_Chi_Minh',
+    cache: new UniversalCache(true)
+  });
+
+  Log.setLevel(Log.Level.ERROR, Log.Level.WARNING);
+
+  app.use(async (c, next) => {
+    customLogger(c);
+    await next();
   });
 
   app.use(async (c, next) => {

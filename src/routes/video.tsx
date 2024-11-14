@@ -54,26 +54,31 @@ router.get(
 router.get(
   '/watch',
   async (c, next) => {
-    try {
-      const { t } = c.req.query();
-      const range = c.req.header('range');
+    const { t } = c.req.query();
+    const range = c.req.header('range');
 
-      if (!range && t) {
-        await verify(t, process.env.JWT_SECRET!);
-      }
+    if (!t) {
+      throw new HTTPException(400, { message: 'Missing token' });
+    }
 
-      await next();
-    } catch (error) {
-      throw new HTTPException(401, {
-        message:
-          error instanceof Error ? error.message : 'Authentication failed'
+    // Only verify token if not a range request
+    if (!range) {
+      await verify(t, process.env.JWT_SECRET!).catch(() => {
+        throw new HTTPException(401, { message: 'Invalid token' });
       });
     }
+
+    await next();
   },
   async (c) => {
-    const { v } = c.req.query();
-    if (!v) {
+    const { v: videoId } = c.req.query();
+    if (!videoId) {
       throw new HTTPException(400, { message: 'Missing video ID' });
+    }
+
+    const videoUrl = videoUrlCache.get(videoId);
+    if (!videoUrl) {
+      throw new HTTPException(404, { message: 'Video URL not found' });
     }
 
     try {
@@ -81,19 +86,20 @@ router.get(
         Connection: 'keep-alive'
       });
 
-      for (const [key, value] of Object.entries(c.req.header())) {
-        if (!EXCLUDED_HEADERS.has(key.toLowerCase()) && value) {
+      // Copy allowed headers from request
+      const requestHeaders = c.req.header();
+      Object.entries(requestHeaders).forEach(([key, value]) => {
+        const lowerKey = key.toLowerCase();
+        if (!EXCLUDED_HEADERS.has(lowerKey) && value) {
           headers.set(key, value);
         }
-      }
-
-      const response = await fetch(videoUrlCache.get(v), {
-        headers
       });
+
+      const response = await fetch(videoUrl, { headers });
 
       return response;
     } catch (error) {
-      console.log(error);
+      console.error('Error streaming video:', error);
     }
   }
 );
