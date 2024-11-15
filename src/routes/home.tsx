@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import MainLayout from '../views/MainLayout';
 import HomePage from '../views/Home';
+import MainLayout from '../views/MainLayout';
 
 const router = new Hono<Env>();
 

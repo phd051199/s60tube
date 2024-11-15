@@ -3,8 +3,7 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { verify } from 'hono/jwt';
 import { z } from 'zod';
-import { videoUrlCache } from '../core/cache';
-import { EXCLUDED_HEADERS } from '../core/constants';
+import { EXCLUDED_HEADERS, limiter, videoUrlCache } from '../core';
 import { filterData, getDownloadLink, signToken, vIdSchema } from '../utils';
 import MainLayout from '../views/MainLayout';
 import SearchPage from '../views/Search';
@@ -12,7 +11,7 @@ import DetailPage from '../views/VideoDetail';
 
 const router = new Hono<Env>();
 
-router.get('/search', MainLayout, async (c) => {
+router.get('/search', MainLayout, limiter, async (c) => {
   const q = c.req.query('q');
   if (!q) return c.redirect('/');
 
@@ -28,6 +27,7 @@ router.get('/search', MainLayout, async (c) => {
 
 router.get(
   '/video/:id',
+  limiter,
   zValidator(
     'param',
     z.object({

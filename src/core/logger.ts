@@ -7,6 +7,6 @@ export const customLogger = (c: Context) => {
     c.req.path,
     c.req.query(),
     c.req.header('user-agent'),
-    c.req.header('x-forwarded-for'),
+    c.req.header('x-forwarded-for')
   );
 };

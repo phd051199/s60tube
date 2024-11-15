@@ -3,7 +3,7 @@ import { HTTPException } from 'hono/http-exception';
 import { sign } from 'hono/jwt';
 import _ from 'lodash';
 import { z } from 'zod';
-import { message } from '../core/constants';
+import { message } from '../core';
 
 export const signToken = (
   sub: string,

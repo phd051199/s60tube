@@ -200,6 +200,11 @@ has-flag@^3.0.0:
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"
   integrity sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==
 
+hono-rate-limiter@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/hono-rate-limiter/-/hono-rate-limiter-0.4.0.tgz#5f7f1f24e04e85faf7b654816d8da66ba3692542"
+  integrity sha512-7RWU2HZvxPtfBrvjXKDiQ3F6ZH8k49JhxVkHquUz5UZKjauj5PrP29MvISykThtfpy4mGG6kqxFBHW1ed9wwnA==
+
 hono@^4.6.10:
   version "4.6.10"
   resolved "https://registry.yarnpkg.com/hono/-/hono-4.6.10.tgz#b778437fd1124b1ebef5798b420213528f4c5a67"
