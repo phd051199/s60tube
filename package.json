@@ -19,6 +19,5 @@
     "@types/lodash": "^4.17.12",
     "prettier": "^3.3.3",
     "wrangler": "^3.83.0"
-  },
-  "packageManager": "yarn@4.3.1"
+  }
 }
