@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server';
 import 'dotenv/config';
 import { Hono } from 'hono';
-import { compress } from 'hono/compress';
+import { cors } from 'hono/cors';
 import Innertube, { Log, UniversalCache } from 'youtubei.js';
 import { customLogger, useErrorHandler } from './core';
 import home from './routes/home';
@@ -20,7 +20,15 @@ const run = async () => {
   Log.setLevel(Log.Level.ERROR, Log.Level.WARNING);
 
   // Middleware
-  app.use(compress());
+  app.use('*', cors({
+    origin: '*',
+    allowHeaders: ['*'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    exposeHeaders: ['*'],
+    credentials: true,
+    maxAge: 86400,
+  }));
+
   app.use(async (c, next) => {
     customLogger(c);
     await next();

@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { verify } from 'hono/jwt';
 import { z } from 'zod';
-import { EXCLUDED_HEADERS, limiter, videoUrlCache } from '../core';
+import { limiter, videoUrlCache } from '../core';
 import { filterData, getDownloadLink, signToken, vIdSchema } from '../utils';
 import MainLayout from '../views/MainLayout';
 import SearchPage from '../views/Search';
@@ -51,57 +51,33 @@ router.get(
   }
 );
 
-router.get(
-  '/watch',
-  async (c, next) => {
-    const { t } = c.req.query();
-    const range = c.req.header('range');
+router.get('/watch', async (c) => {
+  const { t, v: videoId } = c.req.query();
+  const range = c.req.header('range');
 
-    if (!t) {
-      throw new HTTPException(400, { message: 'Missing token' });
-    }
-
-    // Only verify token if not a range request
-    if (!range) {
-      await verify(t, process.env.JWT_SECRET!).catch(() => {
-        throw new HTTPException(401, { message: 'Invalid token' });
-      });
-    }
-
-    await next();
-  },
-  async (c) => {
-    const { v: videoId } = c.req.query();
-    if (!videoId) {
-      throw new HTTPException(400, { message: 'Missing video ID' });
-    }
-
-    const videoUrl = videoUrlCache.get(videoId);
-    if (!videoUrl) {
-      throw new HTTPException(404, { message: 'Video URL not found' });
-    }
-
-    try {
-      const headers = new Headers({
-        Connection: 'keep-alive'
-      });
-
-      // Copy allowed headers from request
-      const requestHeaders = c.req.header();
-      Object.entries(requestHeaders).forEach(([key, value]) => {
-        const lowerKey = key.toLowerCase();
-        if (!EXCLUDED_HEADERS.has(lowerKey) && value) {
-          headers.set(key, value);
-        }
-      });
-
-      const response = await fetch(videoUrl, { headers });
-
-      return response;
-    } catch (error) {
-      console.error('Error streaming video:', error);
-    }
+  if (!t || !videoId) {
+    throw new HTTPException(400, {
+      message: !t ? 'Missing token' : 'Missing video ID'
+    });
   }
-);
+
+  if (!range) {
+    await verify(t, process.env.JWT_SECRET!).catch(() => {
+      throw new HTTPException(401, { message: 'Invalid token' });
+    });
+  }
+
+  const videoUrl = videoUrlCache.get(videoId);
+  if (!videoUrl) {
+    throw new HTTPException(404, { message: 'Video URL not found' });
+  }
+
+  const headers = c.req.header();
+  if (range) {
+    headers['Range'] = range;
+  }
+
+  return fetch(videoUrl, { headers });
+});
 
 export default router;
