@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import Innertube, { Log, UniversalCache } from 'youtubei.js';
-import { customLogger, useErrorHandler } from './core';
+import { APP_PORT, customLogger, useErrorHandler } from './core';
 import home from './routes/home';
 import video from './routes/video';
 
@@ -20,14 +20,14 @@ const run = async () => {
   Log.setLevel(Log.Level.ERROR, Log.Level.WARNING);
 
   // Middleware
-  app.use('*', cors({
-    origin: '*',
-    allowHeaders: ['*'],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    exposeHeaders: ['*'],
-    credentials: true,
-    maxAge: 86400,
-  }));
+  app.use(
+    '*',
+    cors({
+      origin: '*',
+      allowHeaders: ['*'],
+      exposeHeaders: ['*']
+    })
+  );
 
   app.use(async (c, next) => {
     customLogger(c);
@@ -47,6 +47,7 @@ const run = async () => {
     })
   );
   app.get('/coreplayer', (c) => c.redirect(process.env.COREPLAYER_URL!));
+  app.get('/robot.txt', (c) => c.text('User-agent: *\nAllow: /'));
 
   // Error handler
   useErrorHandler(app);
@@ -54,8 +55,10 @@ const run = async () => {
   // Run server
   serve({
     fetch: app.fetch,
-    port: 3003
+    port: APP_PORT
   });
 };
 
-run();
+run().then(() => {
+  console.log(`Server running on http://localhost:${APP_PORT}`);
+});

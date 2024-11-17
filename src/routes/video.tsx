@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { verify } from 'hono/jwt';
 import { z } from 'zod';
-import { limiter, videoUrlCache } from '../core';
+import { APP_PORT, limiter, videoUrlCache } from '../core';
 import { filterData, getDownloadLink, signToken, vIdSchema } from '../utils';
 import MainLayout from '../views/MainLayout';
 import SearchPage from '../views/Search';
@@ -43,7 +43,9 @@ router.get(
     const token = await signToken(id, process.env.JWT_SECRET!);
 
     return c.render(
-      <DetailPage url={`http://${host}/watch?v=${id}&t=${token}`} />,
+      <DetailPage
+        url={`http://${host}:${APP_PORT}/watch?v=${id}&t=${token}`}
+      />,
       {
         title: 'Video Detail'
       }
@@ -72,12 +74,9 @@ router.get('/watch', async (c) => {
     throw new HTTPException(404, { message: 'Video URL not found' });
   }
 
-  const headers = c.req.header();
-  if (range) {
-    headers['Range'] = range;
-  }
-
-  return fetch(videoUrl, { headers });
+  return fetch(videoUrl, {
+    headers: c.req.header()
+  });
 });
 
 export default router;

@@ -7,8 +7,6 @@ export const useErrorHandler = (app: Hono<Env>) => {
   });
 
   app.onError((err, c) => {
-    console.error(err);
-
     if (err instanceof HTTPException) {
       return err.getResponse();
     }

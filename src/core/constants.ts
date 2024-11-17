@@ -12,3 +12,5 @@ export const EXCLUDED_HEADERS = new Set([
   'cf-ray',
   'cf-connecting-ip'
 ]);
+
+export const APP_PORT = 3003;
