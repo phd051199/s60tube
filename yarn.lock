@@ -239,10 +239,10 @@ is-number@^7.0.0:
   resolved "https://registry.yarnpkg.com/is-number/-/is-number-7.0.0.tgz#7535345b896734d5f80c4d06c50955527a14f12b"
   integrity sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==
 
-jintr@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/jintr/-/jintr-3.0.2.tgz#633ecc8da930d25f5004697acb5af4ff36628f26"
-  integrity sha512-5g2EBudeJFOopjAX4exAv5OCCW1DgUISfoioCsm1h9Q9HJ41LmnZ6J52PCsqBlQihsmp0VDuxreAVzM7yk5nFA==
+jintr@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/jintr/-/jintr-3.2.0.tgz#38bfc2311c7ed4412ebe0bfc5c2e700f8f433921"
+  integrity sha512-psD1yf05kMKDNsUdW1l5YhO59pHScQ6OIHHb8W5SKSM2dCOFPsqolmIuSHgVA8+3Dc47NJR181CXZ4alCAPTkA==
   dependencies:
     acorn "^8.8.0"
 
@@ -398,13 +398,13 @@ yn@3.1.1:
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 
-youtubei.js@^11.0.1:
-  version "11.0.1"
-  resolved "https://registry.yarnpkg.com/youtubei.js/-/youtubei.js-11.0.1.tgz#5729bbf2df8dff58c3555140d23ae83c458f0b34"
-  integrity sha512-ZsbOd+5XF2Ofi3FrLMfYd+f9g9H8xswlouFhjhOqbwT68dMJtX6CRGsHNj5VTFCR/+L/865x1lnUlllB2dDDTA==
+youtubei.js@^12.2.0:
+  version "12.2.0"
+  resolved "https://registry.yarnpkg.com/youtubei.js/-/youtubei.js-12.2.0.tgz#54f058b5d0892b5c7e35019e2be6a2a7f7ba4447"
+  integrity sha512-G+50qrbJCToMYhu8jbaHiS3Vf+RRul+CcDbz3hEGwHkGPh+zLiWwD6SS+YhYF+2/op4ZU5zDYQJrGqJ+wKh7Gw==
   dependencies:
     "@bufbuild/protobuf" "^2.0.0"
-    jintr "^3.0.2"
+    jintr "^3.2.0"
     tslib "^2.5.0"
     undici "^5.19.1"
 
