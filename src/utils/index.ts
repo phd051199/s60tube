@@ -21,8 +21,8 @@ export const filterData = (data: any) => {
     (item) =>
       !_.get(item, 'id') ||
       !_.get(item, 'duration.seconds') ||
-      _.get(item, 'type').includes('Reel') ||
-      _.get(item, 'title.text', '').includes('#short')
+      _.get(item, 'type')?.includes('Reel') ||
+      _.get(item, 'title.text')?.includes('#short')
   );
 };
 
