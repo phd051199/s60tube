@@ -27,25 +27,9 @@ jobs:
         continue-on-error: true
 
       - name: Check exit code
-        id: check_exit_code
         run: |
-          exit_code=$?
           echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
           if [ $exit_code -ne 0 ]; then
             echo "Dependency update failed with exit code $exit_code"
             exit 1
           fi
-
-      - name: executing remote ssh commands using password
-        if: steps.check_exit_code.outputs.exit_code == 0
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            cd ~/s60tube
-            git pull
-            /run/user/1000/fnm_multishells/542122_1735449154855/bin/yarn install
-            /run/user/1000/fnm_multishells/542122_1735449154855/bin/yarn build
-            /run/user/1000/fnm_multishells/542122_1735449154855/bin/pm2 restart s60tube
