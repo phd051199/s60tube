@@ -46,6 +46,6 @@ jobs:
           script: |
             cd ~/s60tube
             git pull
-            yarn install
-            yarn build
-            pm2 restart s60tube
+            /run/user/1000/fnm_multishells/542122_1735449154855/bin/yarn install
+            /run/user/1000/fnm_multishells/542122_1735449154855/bin/yarn build
+            /run/user/1000/fnm_multishells/542122_1735449154855/bin/pm2 restart s60tube
