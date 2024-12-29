@@ -27,15 +27,17 @@ jobs:
         continue-on-error: true
 
       - name: Check exit code
+        id: check_exit_code
         run: |
           exit_code=$?
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
           if [ $exit_code -ne 0 ]; then
             echo "Dependency update failed with exit code $exit_code"
             exit 1
           fi
 
       - name: executing remote ssh commands using password
-        if: exit_code == 0
+        if: steps.check_exit_code.outputs.exit_code == 0
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.HOST }}
