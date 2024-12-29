@@ -33,3 +33,17 @@ jobs:
             echo "Dependency update failed with exit code $exit_code"
             exit 1
           fi
+
+      - name: executing remote ssh commands using password
+        if: exit_code == 0
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd ~/s60tube
+            git pull
+            yarn install
+            yarn build
+            pm2 restart s60tube
