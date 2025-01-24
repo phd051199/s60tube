@@ -12,7 +12,7 @@
     "@hono/node-server": "^1.13.7",
     "@hono/zod-validator": "^0.4.2",
     "dotenv": "^16.4.7",
-    "hono": "^4.6.17",
+    "hono": "^4.6.18",
     "hono-rate-limiter": "^0.4.2",
     "lodash": "^4.17.21",
     "youtubei.js": "^13.0.0",
@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.17.14",
-    "@types/node": "^22.10.7",
+    "@types/node": "^22.10.10",
     "@vercel/ncc": "^0.38.2",
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
