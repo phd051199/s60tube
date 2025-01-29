@@ -13,4 +13,4 @@ export const EXCLUDED_HEADERS = new Set([
   'cf-connecting-ip'
 ]);
 
-export const APP_PORT = 3003;
+export const APP_PORT = Number(process.env.PORT || 3003);

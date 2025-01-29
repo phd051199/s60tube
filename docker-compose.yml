@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    ports:
+      - '3003:3003'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - JWT_SECRET=secret
+      - COREPLAYER_URL="https://github.com/phd051199/s60tube/raw/main/coreplayer/coreplayer.sis"
