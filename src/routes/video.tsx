@@ -1,6 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { limiter, ONE_WEEK_MS, videoIdSchema } from "../core/index.ts";
+import { customLogger, ONE_WEEK_MS, videoIdSchema } from "../core/index.ts";
 import MainLayout from "../../views/MainLayout.tsx";
 import SearchPage from "../../views/Search.tsx";
 import DetailPage from "../../views/VideoDetail.tsx";
@@ -10,7 +10,7 @@ import { HTTPException } from "hono/http-exception";
 
 const router = new Hono<Env>();
 
-router.get("/search", MainLayout, limiter, async (c) => {
+router.get("/search", MainLayout, customLogger, async (c) => {
   const q = c.req.query("q");
   if (!q) return c.redirect("/");
 

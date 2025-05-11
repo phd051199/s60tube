@@ -3,7 +3,7 @@ import { serveStatic } from "hono/deno";
 import kvRouter from "./routes/kv.ts";
 import homeRouter from "./routes/home.tsx";
 import { cors } from "hono/cors";
-import { customLogger, useErrorHandler } from "./core/index.ts";
+import { useErrorHandler } from "./core/index.ts";
 import { Env } from "./types.ts";
 import Innertube from "youtubei.js";
 import videoRouter from "./routes/video.tsx";
@@ -19,11 +19,6 @@ const innertube = await Innertube.create({
 });
 
 app.use("*", cors());
-
-app.use(async (c, next) => {
-  customLogger(c);
-  await next();
-});
 
 app.use(async (c, next) => {
   c.set("innertube", innertube);
