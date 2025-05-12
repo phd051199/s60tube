@@ -1,60 +1,146 @@
-// deno-lint-ignore-file no-explicit-any
 import type { FC } from "hono/jsx";
 import { get } from "lodash";
+import Footer from "./components/Footer.tsx";
+import Logo from "./components/Logo.tsx";
 
 const SearchBar: FC = ({ q }) => {
   return (
-    <form action="/search" method="get" style={{ marginBottom: "12px" }}>
-      <input
-        id="inputField"
-        className="input-field"
-        name="q"
-        placeholder="Search Youtube"
-        value={q}
-        style={{
-          width: "72%",
-          marginRight: "4px",
-        }}
-      />
-      <button
-        type="submit"
-        className="submit-button"
-        style={{
-          width: "24%",
-        }}
-      >
-        Search
-      </button>
+    <form action="/search" method="get">
+      <div style={{ display: "flex" }}>
+        <input
+          id="inputField"
+          name="q"
+          type="text"
+          maxLength={128}
+          style={{
+            flex: 4,
+            padding: 4,
+            fontSize: "small",
+            border: "1px solid #ccc",
+          }}
+          value={q}
+          placeholder="Search Youtube"
+        />
+        <input
+          type="submit"
+          value="Search"
+          style={{
+            flex: 1,
+            padding: 4,
+            fontSize: "small",
+            height: "100%",
+            border: "1px solid #ccc",
+          }}
+        />
+      </div>
     </form>
   );
 };
 
 const Video: FC = ({ item }) => {
   return (
-    <div style={styles.videoContainer}>
-      <a href={"/video/" + get(item, "id")}>
-        <div>
-          <div style={{ display: "flex" }}>
-            <img
-              src={`https://img.youtube.com/vi/${get(item, "id")}/default.jpg`}
-              alt={get(item, "id")}
-              style={styles.thumbnail}
-            />
-            <div>
-              <p style={styles.title}>
-                {truncateText(get(item, "title.text", ""), 100)}
-              </p>
-              <p style={styles.publishedDate}>
-                {get(item, "published.text")} | {get(item, "duration.text")}
-              </p>
-              <p style={styles.publishedDate}>
-                {get(item, "short_view_count.text")}
-              </p>
-              <p style={styles.channel}>{get(item, "author.name")}</p>
-            </div>
-          </div>
-        </div>
-      </a>
+    <div
+      style={{
+        paddingTop: "8px",
+        borderBottom: "1px solid #ddd",
+      }}
+    >
+      <table width="100%" style={{ fontSize: "small" }}>
+        <tbody>
+          <tr>
+            <td>
+              <table width="100%" style={{ marginBottom: 2 }}>
+                <tbody>
+                  <tr valign="top">
+                    <td width="42">
+                      <a href={"/video/" + get(item, "id")}>
+                        <img
+                          src={`https://img.youtube.com/vi/${
+                            get(
+                              item,
+                              "id",
+                            )
+                          }/mqdefault.jpg`}
+                          alt="video"
+                          width="120"
+                          height="68"
+                        />
+                      </a>
+                      <div
+                        style={{
+                          color: "#666",
+                          fontSize: "11px",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: "#999",
+                            fontWeight: 400,
+                            border: "1px solid #ccc",
+                            padding: "1px 4px",
+                            borderRadius: "2px",
+                          }}
+                        >
+                          SD
+                        </span>
+                        <span
+                          style={{
+                            color: "#fff",
+                            fontWeight: 500,
+                            backgroundColor: "#212529",
+                            border: "1px solid #212529",
+                            padding: "1px 4px",
+                            borderRadius: "2px",
+                          }}
+                        >
+                          {get(item, "duration.text")}
+                        </span>
+                      </div>
+                    </td>
+                    <td width="4"></td>
+                    <td>
+                      <table width="100%">
+                        <tbody>
+                          <tr>
+                            <td style={{ paddingBottom: 2 }}>
+                              <a
+                                href={"/video/" + get(item, "id")}
+                                style={{
+                                  textDecoration: "none",
+                                }}
+                              >
+                                {truncateText(get(item, "title.text", ""), 75)}
+                              </a>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td
+                              style={{
+                                color: "#666",
+                                paddingBottom: 2,
+                              }}
+                            >
+                              {get(item, "short_view_count.text")} •{" "}
+                              {get(item, "published.text")}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>{get(item, "author.name")}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -63,43 +149,55 @@ const SearchPage: FC = ({ q, data }) => {
   const videos = data.map((item: any) => <Video item={item} key={item.id} />);
 
   return (
-    <main
-      style={{
-        width: "100%",
-      }}
-    >
-      <SearchBar q={q} />
-      {videos}
-    </main>
+    <div style={{ fontSize: "small" }}>
+      <table width="100%" bgcolor="#FFFFFF" cellSpacing="0" cellPadding="0">
+        <tbody>
+          <tr>
+            <td valign="top">
+              {/* Logo */}
+              <table width="100%" cellSpacing="0" cellPadding="0">
+                <tbody>
+                  <tr>
+                    <td align="left">
+                      <a href="/">
+                        <Logo />
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              {/* Search Bar */}
+              <table width="100%" cellSpacing="0" cellPadding="0">
+                <tbody>
+                  <tr>
+                    <td>
+                      <SearchBar q={q} />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              {/* Main Content - Videos */}
+              <table width="100%" cellSpacing="0" cellPadding="0">
+                <tbody>
+                  <tr>
+                    <td>{videos}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <Footer />
+    </div>
   );
 };
 
 function truncateText(text: string, maxLength: number) {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 }
-
-const styles = {
-  videoContainer: {
-    marginBottom: "12px",
-  },
-  thumbnail: {
-    width: "40px",
-    marginRight: "10px",
-  },
-  title: {
-    margin: 0,
-    fontSize: "12px",
-  },
-  publishedDate: {
-    margin: 0,
-    fontSize: "12px",
-    color: "black",
-  },
-  channel: {
-    margin: 0,
-    fontSize: "12px",
-    color: "gray",
-  },
-};
 
 export default SearchPage;

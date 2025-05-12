@@ -1,10 +1,11 @@
 {
   "imports": {
-    "hono": "npm:hono",
-    "zod": "npm:zod",
-    "@hono/zod-validator": "npm:@hono/zod-validator",
-    "hono-rate-limiter": "npm:hono-rate-limiter",
-    "youtubei.js": "https://deno.land/x/youtubei/deno.ts",
+    "bgutils-js": "npm:bgutils-js@^3.2.0",
+    "hono": "npm:hono@^4.7.9",
+    "zod": "npm:zod@^3.24.4",
+    "@hono/zod-validator": "npm:@hono/zod-validator@^0.5.0",
+    "hono-rate-limiter": "npm:hono-rate-limiter@^0.4.2",
+    "youtubei.js": "npm:youtubei.js@^13.4.0",
     "lodash": "https://cdn.skypack.dev/lodash"
   },
   "tasks": {
@@ -21,5 +22,10 @@
     "exclude": ["**/node_modules"],
     "include": [],
     "entrypoint": "src/main.ts"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-explicit-any"]
+    }
   }
 }

@@ -5,10 +5,10 @@ const StreamingInstructions: FC = () => {
     <>
       <h2 style={styles.h2}>Streaming</h2>
       <h4 style={styles.h4}>
-        Please copy the link below and use
+        Please copy the link below and use{" "}
         <a href="/static/coreplayer.sis" style={styles.link}>
-          <span> CorePlayer </span>
-        </a>
+          <span>CorePlayer</span>
+        </a>{" "}
         to play it.
       </h4>
       <p style={styles.instructionText}>
@@ -24,7 +24,7 @@ const StreamingInstructions: FC = () => {
   );
 };
 
-const DownloadSection: FC<{ url: string }> = (props) => {
+const DownloadSection: FC<{ url: string; format: any }> = (props) => {
   return (
     <div style={styles.downloadSection}>
       <h2 style={styles.h2}>Download</h2>
@@ -33,44 +33,56 @@ const DownloadSection: FC<{ url: string }> = (props) => {
           <b>File information</b>
         </span>
       </div>
+
       <div style={styles.infoItem}>
         <span>
-          <b>Quality: </b>
+          <b>Quality:</b>
+          {" "}
         </span>
-        <span>360p</span>
+        <span>{props.format.quality_label}</span>
       </div>
+
       <div style={styles.infoItem}>
         <span>
-          <b>Format: </b>
+          <b>MIME:</b>
+          {" "}
         </span>
-        <span>mp4</span>
-      </div>
-      <div style={{ marginBottom: "12px" }}>
         <span>
-          <b>Codecs: </b>
+          {props.format.mime_type}
+          {props.format.fps || ""}
         </span>
-        <span>avc1, mp4a</span>
       </div>
-      <a href={props.url}>
-        <button type="button" style={styles.downloadButton}>
-          Download
-        </button>
+
+      <a href={props.url} style={styles.downloadLink}>
+        Download
       </a>
     </div>
   );
 };
 
-const DetailPage: FC = (props) => {
+const DetailPage: FC<{ url: string; format: any }> = (props) => {
   return (
-    <main>
-      <StreamingInstructions />
-      <input style={styles.input} value={props.url} />
-      <DownloadSection url={props.url} />
+    <main style={styles.container}>
+      <div style={styles.content}>
+        <StreamingInstructions />
+        <input style={styles.input} value={props.url} />
+        <DownloadSection url={props.url} format={props.format} />
+      </div>
     </main>
   );
 };
 
 const styles = {
+  container: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    padding: "0 4px",
+  },
+  content: {
+    width: "100%",
+    maxWidth: "600px",
+  },
   h2: {
     fontSize: "2rem",
     margin: "12px 0px",
@@ -91,9 +103,12 @@ const styles = {
     width: "100%",
     marginTop: "8px",
     fontSize: "14px",
+    boxSizing: "border-box",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   downloadSection: {
-    margin: "32px 0px",
+    margin: "16px 0px",
     fontSize: "14px",
   },
   downloadInfo: {
@@ -103,17 +118,14 @@ const styles = {
   infoItem: {
     marginBottom: "4px",
   },
-  downloadButton: {
+  downloadLink: {
+    display: "inline-block",
     padding: "10px 20px",
     fontSize: "14px",
     backgroundColor: "#007bff",
     color: "#fff",
-    border: "none",
+    textDecoration: "none",
     borderRadius: "5px",
-    cursor: "pointer",
-  },
-  downloadButtonHover: {
-    backgroundColor: "#0056b3",
   },
 };
 

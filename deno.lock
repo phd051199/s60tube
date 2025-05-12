@@ -2,18 +2,22 @@
   "version": "5",
   "specifiers": {
     "jsr:@luanrt/jintr@*": "3.3.1",
-    "npm:@hono/zod-validator@*": "0.5.0_hono@4.7.9_zod@3.24.4",
+    "npm:@hono/zod-validator@0.5": "0.5.0_hono@4.7.9_zod@3.24.4",
+    "npm:@types/estree@^1.0.6": "1.0.7",
     "npm:acorn@^8.8.0": "8.14.1",
-    "npm:hono-rate-limiter@*": "0.4.2_hono@4.7.9",
-    "npm:hono@*": "4.7.9",
+    "npm:bgutils-js@^3.2.0": "3.2.0",
+    "npm:hono-rate-limiter@~0.4.2": "0.4.2_hono@4.7.9",
+    "npm:hono@^4.7.9": "4.7.9",
     "npm:lodash@*": "4.17.21",
-    "npm:youtubei.js@*": "13.4.0",
-    "npm:zod@*": "3.24.4"
+    "npm:youtubei.js@^13.4.0": "13.4.0",
+    "npm:zod@*": "3.24.4",
+    "npm:zod@^3.24.4": "3.24.4"
   },
   "jsr": {
     "@luanrt/jintr@3.3.1": {
       "integrity": "7277642e971052dc9e4d0119b521ce89617c22d9132e7ab87306b4b804d844c5",
       "dependencies": [
+        "npm:@types/estree",
         "npm:acorn"
       ]
     }
@@ -32,9 +36,15 @@
         "zod"
       ]
     },
+    "@types/estree@1.0.7": {
+      "integrity": "sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ=="
+    },
     "acorn@8.14.1": {
       "integrity": "sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg==",
       "bin": true
+    },
+    "bgutils-js@3.2.0": {
+      "integrity": "sha512-CacO15JvxbclbLeCAAm9DETGlLuisRGWpPigoRvNsccSCPEC4pwYwA2g2x/pv7Om/sk79d4ib35V5HHmxPBpDg=="
     },
     "hono-rate-limiter@0.4.2_hono@4.7.9": {
       "integrity": "sha512-AAtFqgADyrmbDijcRTT/HJfwqfvhalya2Zo+MgfdrMPas3zSMD8SU03cv+ZsYwRU1swv7zgVt0shwN059yzhjw==",
@@ -706,9 +716,11 @@
     "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/platform/lib.ts": "fdac76db7d9f1c13039036f590270fe7860396a8afb24eac078122d91b4d6742",
     "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/platform/polyfills/web-crypto.ts": "ae20ed00dea9eafca9ba590f4fa440299cbd57288add788c59cb19f3455ae6d1",
     "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/types/Cache.ts": "06cd238bce7c9657055151587e36ee445e8236d54d27272124ced10ea7be0da4",
+    "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/types/DashOptions.ts": "cf694c112ab97d778b3df735ddc76fd16fd5ae0d49943e2cc580f1f986f63da6",
     "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/types/FormatUtils.ts": "8962fc5f7d02fd19fb2bce937692f9aae4fb15379a40d4ad4edd2634197e7abc",
     "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/types/Misc.ts": "205df5b124cb1e17cffccbc7cd920257af4744aea67308d18c05e7e4d12e9827",
     "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/types/PlatformShim.ts": "06f656f0d2bc20980ef77148455b662af10fe4b0e48d41566bf28e471eea4be1",
+    "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/types/StreamingInfoOptions.ts": "cd404a388a8d36bc28b60053851cd92495b666938552898c430c661ac4f7ad0b",
     "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/types/index.ts": "a28448751e5567b91cc60528a82999885630ed099c19318f265c4360537cff4e",
     "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/utils/Cache.ts": "fd90c88da32e9283adf065475a5cb4e680b5152a6bc06dd8a3dc9349358cab35",
     "https://deno.land/x/youtubei@v13.4.0-deno/deno/src/utils/Constants.ts": "a149b5f6b59a3a042f5b69b2725551fdf85a7c7ae43c5f6a8df2aea48d05426c",
@@ -747,10 +759,12 @@
   },
   "workspace": {
     "dependencies": [
-      "npm:@hono/zod-validator@*",
-      "npm:hono-rate-limiter@*",
-      "npm:hono@*",
-      "npm:zod@*"
+      "npm:@hono/zod-validator@0.5",
+      "npm:bgutils-js@^3.2.0",
+      "npm:hono-rate-limiter@~0.4.2",
+      "npm:hono@^4.7.9",
+      "npm:youtubei.js@^13.4.0",
+      "npm:zod@^3.24.4"
     ]
   }
 }

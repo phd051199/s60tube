@@ -1,4 +1,4 @@
-import Innertube from "youtubei.js";
+import { type Innertube } from "youtubei.js/cf-worker";
 
 export type Env = {
   Variables: {

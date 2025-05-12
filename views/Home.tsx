@@ -1,4 +1,5 @@
-import { memo, type FC } from "hono/jsx";
+import { type FC, memo } from "hono/jsx";
+import Logo from "./components/Logo.tsx";
 
 const HomePage: FC = memo(() => {
   return (
@@ -10,11 +11,7 @@ const HomePage: FC = memo(() => {
           alignItems: "center",
         }}
       >
-        <h1 style={styles.titleContainer}>
-          <span style={styles.logoSpan}>S60</span>
-          <span>Tube</span>
-          <div style={styles.versionDiv}>VN</div>
-        </h1>
+        <Logo />
       </div>
 
       <form
@@ -62,25 +59,6 @@ const styles = {
   },
   submitButtonHover: {
     backgroundColor: "#0056b3",
-  },
-  titleContainer: {
-    position: "relative",
-    width: "fit-content",
-    textAlign: "center",
-    marginTop: "20px",
-  },
-  logoSpan: {
-    backgroundColor: "#dd2c00",
-    color: "#fff",
-    padding: "2px 6px",
-    marginRight: "2px",
-  },
-  versionDiv: {
-    position: "absolute",
-    right: -20,
-    top: 0,
-    color: "#606060",
-    fontSize: "12px",
   },
 };
 

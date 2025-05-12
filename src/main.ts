@@ -1,27 +1,31 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
-import kvRouter from "./routes/kv.ts";
-import homeRouter from "./routes/home.tsx";
+
 import { customLogger, useErrorHandler } from "./core/index.ts";
 import { Env } from "./types.ts";
-import Innertube from "youtubei.js";
+import { Innertube, Log } from "youtubei.js/cf-worker";
+
+import homeRouter from "./routes/home.tsx";
 import videoRouter from "./routes/video.tsx";
+import { generatePoToken } from "./utils/index.ts";
 
 const app = new Hono<Env>();
 const kv = await Deno.openKv();
+
+const { poToken, visitorData } = generatePoToken();
+
 const innertube = await Innertube.create({
-  lang: "vi",
+  po_token: poToken,
+  visitor_data: visitorData,
   location: "VN",
   timezone: "Asia/Ho_Chi_Minh",
   generate_session_locally: true,
 });
 
-app.use(async (c, next) => {
-  customLogger(c);
-  await next();
-});
+Log.setLevel(Log.Level.WARNING, Log.Level.ERROR);
 
 app.use(async (c, next) => {
+  customLogger(c);
   c.set("innertube", innertube);
   c.set("kv", kv);
   await next();
@@ -30,7 +34,6 @@ app.use(async (c, next) => {
 app.use("/static/*", serveStatic({ root: "./" }));
 app.get("/robots.txt", serveStatic({ path: "./static/robots.txt" }));
 
-app.route("/kv", kvRouter);
 app.route("/", homeRouter);
 app.route("/", videoRouter);
 

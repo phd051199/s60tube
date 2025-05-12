@@ -1,11 +1,13 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { ONE_WEEK_MS, videoIdSchema } from "../core/index.ts";
+
+import { videoIdSchema, YTB_LINK_TTL } from "../core/index.ts";
+import { filterData, getDownloadLink } from "../utils/index.ts";
+import { Env } from "../types.ts";
+
 import MainLayout from "../../views/MainLayout.tsx";
 import SearchPage from "../../views/Search.tsx";
 import DetailPage from "../../views/VideoDetail.tsx";
-import { Env } from "../types.ts";
-import { filterData, getDownloadLink } from "../utils/index.ts";
 import { HTTPException } from "hono/http-exception";
 
 const router = new Hono<Env>();
@@ -15,7 +17,6 @@ router.get("/search", MainLayout, async (c) => {
   if (!q) return c.redirect("/");
 
   const result = await c.get("innertube").search(q, {
-    type: "video",
     sort_by: "relevance",
   });
 
@@ -28,28 +29,31 @@ router.get(
   MainLayout,
   async (c) => {
     const { id } = c.req.valid("param");
-    const url = await getDownloadLink(id, c);
+    const { url, format } = await getDownloadLink(id, c);
 
     await c.get("kv").set([id], url, {
-      expireIn: ONE_WEEK_MS,
+      expireIn: YTB_LINK_TTL,
     });
 
     return c.render(
-      <DetailPage url={`http://ytb-proxy.dph.workers.dev/watch?v=${id}`} />
+      <DetailPage
+        url={`http://ytb-proxy.dph.workers.dev/watch?v=${id}`}
+        format={format}
+      />,
     );
-  }
+  },
 );
 
 router.get("/watch", async (c) => {
-  const { v: videoId } = c.req.query();
+  const { v } = c.req.query();
 
-  if (!videoId) {
+  if (!v) {
     throw new HTTPException(400, {
       message: "Missing video ID",
     });
   }
 
-  const videoUrl = await c.get("kv").get([videoId]);
+  const videoUrl = await c.get("kv").get([v]);
 
   if (!videoUrl.value) {
     throw new HTTPException(404, { message: "Video URL not found" });
