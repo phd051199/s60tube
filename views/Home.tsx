@@ -37,6 +37,27 @@ const HomePage: FC = memo(() => {
           Search
         </button>
       </form>
+
+      <div
+        style={{
+          marginTop: "18px",
+          textAlign: "center",
+          color: "#6c757d",
+        }}
+      >
+        <p style={{ marginBottom: "4px" }}>
+          Feedback:{" "}
+          <a
+            href="https://t.me/dph957"
+            style={{ color: "#0066cc", textDecoration: "none" }}
+          >
+            Telegram @dph957
+          </a>
+        </p>
+        <p style={{ marginTop: "0px" }}>
+          Powered by <span>Deno Deploy</span> & <span>Cloudflare Workers</span>
+        </p>
+      </div>
     </main>
   );
 });

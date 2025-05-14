@@ -1,8 +1,15 @@
 import { type FC, memo } from "hono/jsx";
 
-const Logo: FC = memo(() => {
+const Logo: FC = memo(({ center = true, large = true }) => {
   return (
-    <h1 style={styles.titleContainer}>
+    <h1
+      style={{
+        ...styles.titleContainer,
+        textAlign: center ? "center" : "left",
+        fontSize: large ? "36px" : "24px",
+        marginTop: large ? "24px" : "12px",
+      }}
+    >
       <span style={styles.logoSpan}>S60</span>
       <span style={styles.textSpan}>Tube</span>
     </h1>
@@ -13,9 +20,6 @@ const styles = {
   titleContainer: {
     position: "relative",
     width: "fit-content",
-    textAlign: "center",
-    marginTop: "12px",
-    fontSize: "24px",
   },
   logoSpan: {
     backgroundColor: "#dd2c00",

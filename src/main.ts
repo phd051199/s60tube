@@ -17,8 +17,6 @@ const { poToken, visitorData } = generatePoToken();
 const innertube = await Innertube.create({
   po_token: poToken,
   visitor_data: visitorData,
-  location: "VN",
-  timezone: "Asia/Ho_Chi_Minh",
   generate_session_locally: true,
 });
 

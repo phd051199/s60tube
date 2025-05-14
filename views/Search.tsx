@@ -150,25 +150,23 @@ const SearchPage: FC = ({ q, data }) => {
 
   return (
     <div style={{ fontSize: "small" }}>
-      <table width="100%" bgcolor="#FFFFFF" cellSpacing="0" cellPadding="0">
+      <table width="100%" bgcolor="#FFFFFF">
         <tbody>
           <tr>
             <td valign="top">
               {/* Logo */}
-              <table width="100%" cellSpacing="0" cellPadding="0">
+              <table width="100%" style={{ margin: "2px 2px 0 2px" }}>
                 <tbody>
                   <tr>
                     <td align="left">
-                      <a href="/">
-                        <Logo />
-                      </a>
+                      <Logo center={false} large={false} />
                     </td>
                   </tr>
                 </tbody>
               </table>
 
               {/* Search Bar */}
-              <table width="100%" cellSpacing="0" cellPadding="0">
+              <table width="100%" style={{ marginLeft: 2 }}>
                 <tbody>
                   <tr>
                     <td>
@@ -179,7 +177,7 @@ const SearchPage: FC = ({ q, data }) => {
               </table>
 
               {/* Main Content - Videos */}
-              <table width="100%" cellSpacing="0" cellPadding="0">
+              <table width="100%">
                 <tbody>
                   <tr>
                     <td>{videos}</td>

@@ -116,9 +116,10 @@ const styles = {
     fontSize: "1rem",
   },
   infoItem: {
-    marginBottom: "4px",
+    marginBottom: "6px",
   },
   downloadLink: {
+    marginTop: "12px",
     display: "inline-block",
     padding: "10px 20px",
     fontSize: "14px",
