@@ -13,33 +13,15 @@ const Footer: FC = () => {
                 marginBottom: "8px",
               }}
             >
-              <span style={{ color: "#0066cc" }}>[SYS_INFO]</span>
-              <br />
-              <span style={{ color: "#666" }}>Runtime:</span>{" "}
-              <span style={{ color: "#28a745" }}>2.3.1</span> |{" "}
-              <span style={{ color: "#666" }}>TypeScript:</span>{" "}
-              <span style={{ color: "#28a745" }}>5.8.3</span>
-            </div>
-
-            <div style={{ marginBottom: "8px" }}>
-              <span style={{ color: "#999" }}>$</span>{" "}
-              <span style={{ color: "#0066cc" }}>TZ=</span>
+              <span style={{ color: "#666" }}>Region:</span>{" "}
               <span style={{ color: "#28a745" }}>
-                {Intl.DateTimeFormat().resolvedOptions().timeZone}
-              </span>
-              <br />
-              <span style={{ color: "#999" }}>$</span>{" "}
-              <span style={{ color: "#0066cc" }}>LANG=</span>
-              <span style={{ color: "#28a745" }}>
-                {Deno.env.get("LANG") || "en_US.UTF-8"}
+                {Deno.env.get("DENO_REGION") || "Unknown"}
               </span>
             </div>
 
             <div
               style={{
-                backgroundColor: "#f8f9fa",
                 padding: "4px",
-                border: "1px solid #ddd",
                 marginBottom: "8px",
               }}
             >

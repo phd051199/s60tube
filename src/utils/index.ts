@@ -4,9 +4,9 @@ import { HTTPException } from "hono/http-exception";
 import { sign } from "hono/jwt";
 import { z } from "zod";
 import { ProtoUtils, Utils } from "youtubei.js/cf-worker";
+import BG from "bgutils-js";
 
 import { Env } from "../types.ts";
-import BG from "bgutils-js";
 
 export const message = {
   INVALID_VIDEO_ID: "Invalid video ID",
@@ -29,16 +29,8 @@ export const filterData = (data: any) => {
   return _.reject(data.videos, (item: any) => {
     const id = _.get(item, "id");
     const durationSeconds = _.get(item, "duration.seconds");
-    const type = _.get(item, "type");
-    const title = _.get(item, "title.text");
 
-    return (
-      !id ||
-      !durationSeconds ||
-      durationSeconds < 60 ||
-      type?.includes("Reel") ||
-      title?.includes("#short")
-    );
+    return !id || !durationSeconds;
   });
 };
 

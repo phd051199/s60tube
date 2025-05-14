@@ -1,5 +1,6 @@
 import type { FC } from "hono/jsx";
 import { get } from "lodash";
+
 import Footer from "./components/Footer.tsx";
 import Logo from "./components/Logo.tsx";
 
@@ -38,6 +39,9 @@ const SearchBar: FC = ({ q }) => {
 };
 
 const Video: FC = ({ item }) => {
+  const type = get(item, "thumbnail_overlays", []);
+  const isReel = get(type, "[0].text", "").toUpperCase() === "SHORTS";
+
   return (
     <div
       style={{
@@ -77,14 +81,13 @@ const Video: FC = ({ item }) => {
                       >
                         <span
                           style={{
-                            color: "#999",
                             fontWeight: 400,
                             border: "1px solid #ccc",
                             padding: "1px 4px",
                             borderRadius: "2px",
                           }}
                         >
-                          SD
+                          {isReel ? "Shorts" : "Video"}
                         </span>
                         <span
                           style={{

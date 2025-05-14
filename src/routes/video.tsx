@@ -1,5 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 import { videoIdSchema, YTB_LINK_TTL } from "../core/index.ts";
 import { filterData, getDownloadLink } from "../utils/index.ts";
@@ -8,7 +9,6 @@ import { Env } from "../types.ts";
 import MainLayout from "../../views/MainLayout.tsx";
 import SearchPage from "../../views/Search.tsx";
 import DetailPage from "../../views/VideoDetail.tsx";
-import { HTTPException } from "hono/http-exception";
 
 const router = new Hono<Env>();
 

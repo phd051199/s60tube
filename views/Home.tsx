@@ -1,4 +1,5 @@
 import { type FC, memo } from "hono/jsx";
+
 import Logo from "./components/Logo.tsx";
 
 const HomePage: FC = memo(() => {
