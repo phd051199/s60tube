@@ -28,11 +28,7 @@ router.get(
   MainLayout,
   async (c) => {
     const { id } = c.req.valid("param");
-    const { url, format } = await getDownloadLink(id, c).catch((e) => {
-      console.error(e);
-      throw e;
-    });
-
+    const { url, format } = await getDownloadLink(id, c);
     await saveVideoUrl(id, url);
 
     return c.render(

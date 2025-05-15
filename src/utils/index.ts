@@ -35,19 +35,27 @@ export const filterData = (data: any) => {
 };
 
 export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
-  const innertube = c.get("innertube");
-  const info = await innertube.getBasicInfo(videoId);
+  try {
+    const innertube = c.get("innertube");
+    const info = await innertube.getBasicInfo(videoId).catch((error) => {
+      console.error("Error getting basic info", videoId, error);
+      throw error;
+    });
 
-  const format = info.chooseFormat({
-    type: "video+audio",
-  });
+    const format = info.chooseFormat({
+      type: "video+audio",
+      format: "mp4",
+    });
 
-  const url = format?.decipher(innertube.session.player);
-  if (!url) {
-    throw new HTTPException(404, { message: message.VIDEO_NOT_FOUND });
+    const url = format?.decipher(innertube.session.player);
+    if (!url) {
+      throw new HTTPException(404, { message: message.VIDEO_NOT_FOUND });
+    }
+    return { url, format };
+  } catch (error) {
+    console.error("Error getting download link", videoId, error);
+    throw error;
   }
-
-  return { url, format };
 };
 
 export function fetchFunction(
