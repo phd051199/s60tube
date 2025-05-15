@@ -29,9 +29,9 @@ router.get(
   MainLayout,
   async (c) => {
     const { id } = c.req.valid("param");
-    const { format, fromCFWorker } = await tryGetVideoInfo(c, id);
+    const { format, useCFWorker } = await tryGetVideoInfo(c, id);
     const proxyUrl = `http://${Deno.env.get("YTB_PROXY_URL")}/${
-      fromCFWorker ? "v2" : "v1"
+      useCFWorker ? "v2" : "v1"
     }/watch?v=${id}`;
     return c.render(<DetailPage url={proxyUrl} format={format} />);
   },

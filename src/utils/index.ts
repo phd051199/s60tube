@@ -139,7 +139,13 @@ export const getVideoInfo = async (
     ? saveVideoUrl(id, url)
     : c.get("kv").set([id], url, { expireIn: YTB_LINK_TTL }));
 
-  return { format, fromCFWorker: useCFWorker };
+  if (useCFWorker) {
+    console.warn("[INFO] Using CF Worker", id);
+  } else {
+    console.warn("[INFO] Using Deno", id);
+  }
+
+  return { format, useCFWorker };
 };
 
 export const tryGetVideoInfo = async (c: Context, id: string) => {
