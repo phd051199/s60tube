@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
-import { Innertube, Log } from "youtubei.js/cf-worker";
+import { Innertube } from "youtubei.js/cf-worker";
 
 import { customLogger, useErrorHandler } from "./core/index.ts";
 import { Env } from "./types.ts";
@@ -25,8 +25,6 @@ const innertubeCFWorker = await Innertube.create({
   generate_session_locally: true,
   fetch: fetchFunction,
 });
-
-Log.setLevel(Log.Level.ERROR);
 
 app.use(async (c, next) => {
   customLogger(c);
