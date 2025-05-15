@@ -9,8 +9,8 @@
     "lodash": "https://cdn.skypack.dev/lodash"
   },
   "tasks": {
-    "dev": "deno run --watch --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
-    "start": "deno run --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
+    "dev": "deno run --watch --env-file=.env --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
+    "start": "deno run --env-file=.env --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
     "deploy": "deployctl deploy --prod"
   },
   "compilerOptions": {
@@ -21,7 +21,8 @@
     "project": "bb79a90e-e05d-4b0d-aa11-0ef70f40e56c",
     "exclude": ["**/node_modules"],
     "include": [],
-    "entrypoint": "src/main.ts"
+    "entrypoint": "src/main.ts",
+    "env": ["YTB_PROXY_URL"]
   },
   "lint": {
     "rules": {

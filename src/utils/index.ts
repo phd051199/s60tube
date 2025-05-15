@@ -61,7 +61,9 @@ export function fetchFunction(
     ? input
     : new URL(input.url);
 
-  const proxyUrl = `https://prx.dph.workers.dev?__host=${url.href}`;
+  const proxyUrl = `https://${
+    Deno.env.get("YTB_PROXY_URL")
+  }?__host=${url.href}`;
   const headers = new Headers(
     init?.headers || (input instanceof Request ? input.headers : undefined),
   );
@@ -97,7 +99,7 @@ export const saveVideoUrl = async (
   videoId: string,
   videoUrl: string,
 ) => {
-  await fetch("http://ytb-proxy.dph.workers.dev/kv", {
+  await fetch(`https://${Deno.env.get("YTB_PROXY_URL")}/kv`, {
     method: "POST",
     body: JSON.stringify({
       key: videoId,

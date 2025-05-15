@@ -35,7 +35,7 @@ router.get(
 
     return c.render(
       <DetailPage
-        url={`http://ytb-proxy.dph.workers.dev/v2/watch?v=${id}`}
+        url={`http://${Deno.env.get("YTB_PROXY_URL")}/v2/watch?v=${id}`}
         format={format}
       />,
     );

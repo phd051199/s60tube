@@ -5,4 +5,5 @@ export type Env = {
     innertube: Innertube;
     kv: Deno.Kv;
   };
+  YTB_PROXY_URL: string;
 };
