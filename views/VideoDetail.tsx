@@ -6,7 +6,10 @@ const StreamingInstructions: FC = () => {
       <h2 style={styles.h2}>Streaming</h2>
       <h4 style={styles.h4}>
         Please copy the link below and use{" "}
-        <a href="/static/coreplayer.sis" style={styles.link}>
+        <a
+          href="https://github.com/phd051199/s60tube/raw/refs/heads/main/static/coreplayer.sis"
+          style={styles.link}
+        >
           <span>CorePlayer</span>
         </a>{" "}
         to play it.
@@ -39,7 +42,10 @@ const DownloadSection: FC<{ url: string; format: any }> = (props) => {
           <b>Quality:</b>
           {" "}
         </span>
-        <span>{props.format.quality_label}</span>
+        <span>
+          {props.format.quality_label}
+          {props.format.fps || ""}
+        </span>
       </div>
 
       <div style={styles.infoItem}>
@@ -49,7 +55,6 @@ const DownloadSection: FC<{ url: string; format: any }> = (props) => {
         </span>
         <span>
           {props.format.mime_type}
-          {props.format.fps || ""}
         </span>
       </div>
 
