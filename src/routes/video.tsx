@@ -2,8 +2,8 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 
-import { videoIdSchema, YTB_LINK_TTL } from "../core/index.ts";
-import { filterData, getDownloadLink } from "../utils/index.ts";
+import { videoIdSchema } from "../core/index.ts";
+import { filterData, getDownloadLink, saveVideoUrl } from "../utils/index.ts";
 import { Env } from "../types.ts";
 
 import MainLayout from "../../views/MainLayout.tsx";
@@ -31,13 +31,11 @@ router.get(
     const { id } = c.req.valid("param");
     const { url, format } = await getDownloadLink(id, c);
 
-    await c.get("kv").set([id], url, {
-      expireIn: YTB_LINK_TTL,
-    });
+    await saveVideoUrl(id, url);
 
     return c.render(
       <DetailPage
-        url={`http://ytb-proxy.dph.workers.dev/watch?v=${id}`}
+        url={`http://ytb-proxy.dph.workers.dev/v2/watch?v=${id}`}
         format={format}
       />,
     );

@@ -51,23 +51,59 @@ export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
   return { url, format };
 };
 
-export const fetchFn = (input: RequestInfo | URL, init?: RequestInit) => {
-  const url = input instanceof URL
+export function fetchFunction(
+  input: string | Request | URL,
+  init?: RequestInit,
+): Promise<Response> {
+  const url = typeof input === "string"
+    ? new URL(input)
+    : input instanceof URL
     ? input
-    : new URL(typeof input === "string" ? input : input.url);
+    : new URL(input.url);
 
   const proxyUrl = `https://prx.dph.workers.dev?__host=${url.href}`;
-
   const headers = new Headers(
     init?.headers || (input instanceof Request ? input.headers : undefined),
   );
 
+  if (url.pathname.includes("v1/player")) {
+    url.searchParams.set(
+      "$fields",
+      "playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking",
+    );
+  }
+
+  url.searchParams.set("__headers", JSON.stringify([...headers]));
   const request = new Request(
     proxyUrl,
     input instanceof Request ? input : undefined,
   );
+  headers.delete("user-agent");
 
-  return fetch(request, init ? { ...init, headers } : { headers });
+  return fetch(
+    request,
+    init
+      ? {
+        ...init,
+        headers,
+      }
+      : {
+        headers,
+      },
+  );
+}
+
+export const saveVideoUrl = async (
+  videoId: string,
+  videoUrl: string,
+) => {
+  await fetch("http://ytb-proxy.dph.workers.dev/kv", {
+    method: "POST",
+    body: JSON.stringify({
+      key: videoId,
+      value: videoUrl,
+    }),
+  });
 };
 
 export const generatePoToken = () => {
