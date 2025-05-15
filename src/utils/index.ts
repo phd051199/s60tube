@@ -1,12 +1,11 @@
 import _ from "lodash";
-import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { sign } from "hono/jwt";
 import { z } from "zod";
-import { ProtoUtils, Utils } from "youtubei.js/cf-worker";
+import Innertube, { ProtoUtils, Utils } from "youtubei.js/cf-worker";
 import BG from "bgutils-js";
-
-import { Env } from "../types.ts";
+import { Context } from "hono";
+import { YTB_LINK_TTL } from "../core/index.ts";
 
 export const message = {
   INVALID_VIDEO_ID: "Invalid video ID",
@@ -34,9 +33,11 @@ export const filterData = (data: any) => {
   });
 };
 
-export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
+export const getDownloadLink = async (
+  innertube: Innertube,
+  videoId: string,
+) => {
   try {
-    const innertube = c.get("innertube");
     const info = await innertube.getBasicInfo(videoId).catch((error) => {
       console.error("Error getting basic info", videoId);
       throw error;
@@ -125,4 +126,32 @@ export const generatePoToken = () => {
   console.log("Generating PO token", poToken);
   console.log("Visitor data", visitorData);
   return { poToken, visitorData };
+};
+
+export const getVideoInfo = async (
+  c: Context,
+  options: { useCFWorker: boolean; id: string },
+) => {
+  const innertube = options.useCFWorker
+    ? c.get("innertubeCFWorker")
+    : c.get("innertube");
+  const { url, format } = await getDownloadLink(innertube, options.id);
+
+  const saveUrl = options.useCFWorker
+    ? () => saveVideoUrl(options.id, url)
+    : () => c.get("kv").set([options.id], url, { expireIn: YTB_LINK_TTL });
+
+  await saveUrl();
+
+  return { format, fromCFWorker: options.useCFWorker };
+};
+
+export const tryGetVideoInfo = async (c: Context, id: string) => {
+  try {
+    const result = await getVideoInfo(c, { useCFWorker: true, id });
+    return result;
+  } catch {
+    const result = await getVideoInfo(c, { useCFWorker: false, id });
+    return result;
+  }
 };
