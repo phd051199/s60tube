@@ -40,7 +40,6 @@ export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
 
   const format = info.chooseFormat({
     type: "video+audio",
-    quality: "360p",
   });
 
   const url = format?.decipher(innertube.session.player);

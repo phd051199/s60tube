@@ -1,6 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
 
 import { videoIdSchema } from "../core/index.ts";
 import { filterData, getDownloadLink, saveVideoUrl } from "../utils/index.ts";
@@ -29,7 +28,10 @@ router.get(
   MainLayout,
   async (c) => {
     const { id } = c.req.valid("param");
-    const { url, format } = await getDownloadLink(id, c);
+    const { url, format } = await getDownloadLink(id, c).catch((e) => {
+      console.error(e);
+      throw e;
+    });
 
     await saveVideoUrl(id, url);
 
@@ -41,25 +43,5 @@ router.get(
     );
   },
 );
-
-router.get("/watch", async (c) => {
-  const { v } = c.req.query();
-
-  if (!v) {
-    throw new HTTPException(400, {
-      message: "Missing video ID",
-    });
-  }
-
-  const videoUrl = await c.get("kv").get([v]);
-
-  if (!videoUrl.value) {
-    throw new HTTPException(404, { message: "Video URL not found" });
-  }
-
-  return fetch(videoUrl.value as string, {
-    headers: c.req.header(),
-  });
-});
 
 export default router;

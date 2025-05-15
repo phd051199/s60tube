@@ -10,8 +10,6 @@ import videoRouter from "./routes/video.tsx";
 import { fetchFunction, generatePoToken } from "./utils/index.ts";
 
 const app = new Hono<Env>();
-const kv = await Deno.openKv();
-
 const { poToken, visitorData } = generatePoToken();
 
 const innertube = await Innertube.create({
@@ -26,7 +24,6 @@ Log.setLevel(Log.Level.ERROR);
 app.use(async (c, next) => {
   customLogger(c);
   c.set("innertube", innertube);
-  c.set("kv", kv);
   await next();
 });
 
