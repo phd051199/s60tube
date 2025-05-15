@@ -38,7 +38,7 @@ export const getDownloadLink = async (videoId: string, c: Context<Env>) => {
   try {
     const innertube = c.get("innertube");
     const info = await innertube.getBasicInfo(videoId).catch((error) => {
-      console.error("Error getting basic info", videoId, error);
+      console.error("Error getting basic info", videoId);
       throw error;
     });
 
