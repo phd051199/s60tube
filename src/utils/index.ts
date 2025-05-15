@@ -130,28 +130,22 @@ export const generatePoToken = () => {
 
 export const getVideoInfo = async (
   c: Context,
-  options: { useCFWorker: boolean; id: string },
+  { useCFWorker, id }: { useCFWorker: boolean; id: string },
 ) => {
-  const innertube = options.useCFWorker
-    ? c.get("innertubeCFWorker")
-    : c.get("innertube");
-  const { url, format } = await getDownloadLink(innertube, options.id);
+  const innertube = c.get(useCFWorker ? "innertubeCFWorker" : "innertube");
+  const { url, format } = await getDownloadLink(innertube, id);
 
-  const saveUrl = options.useCFWorker
-    ? () => saveVideoUrl(options.id, url)
-    : () => c.get("kv").set([options.id], url, { expireIn: YTB_LINK_TTL });
+  await (useCFWorker
+    ? saveVideoUrl(id, url)
+    : c.get("kv").set([id], url, { expireIn: YTB_LINK_TTL }));
 
-  await saveUrl();
-
-  return { format, fromCFWorker: options.useCFWorker };
+  return { format, fromCFWorker: useCFWorker };
 };
 
 export const tryGetVideoInfo = async (c: Context, id: string) => {
   try {
-    const result = await getVideoInfo(c, { useCFWorker: true, id });
-    return result;
+    return await getVideoInfo(c, { useCFWorker: true, id });
   } catch {
-    const result = await getVideoInfo(c, { useCFWorker: false, id });
-    return result;
+    return await getVideoInfo(c, { useCFWorker: false, id });
   }
 };
