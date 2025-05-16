@@ -19,3 +19,5 @@ export const keySchema = z.object({
 export const videoIdSchema = z.object({
   id: vIdSchema,
 });
+
+export const blacklist = ["chrome", "firefox", "safari", "vlc", "curl", "wget"];

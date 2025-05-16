@@ -1,14 +1,14 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 
-import { videoIdSchema } from "../core/index.ts";
-import { filterData, tryGetVideoInfo } from "../utils/index.ts";
+import { blacklist, videoIdSchema } from "../core/index.ts";
 import { Env } from "../types.ts";
+import { filterData, tryGetVideoInfo } from "../utils/index.ts";
 
+import { HTTPException } from "hono/http-exception";
 import MainLayout from "../../views/MainLayout.tsx";
 import SearchPage from "../../views/Search.tsx";
 import DetailPage from "../../views/VideoDetail.tsx";
-import { HTTPException } from "hono/http-exception";
 
 const router = new Hono<Env>();
 
@@ -34,12 +34,23 @@ router.get(
       useCFWorker ? "v2" : "v1"
     }/watch?v=${id}`;
     return c.render(<DetailPage url={proxyUrl} format={format} />);
-  },
+  }
 );
 
 router.get("/watch", async (c) => {
-  const { v } = c.req.query();
+  const userAgent = c.req.header("User-Agent")?.toLowerCase();
 
+  if (
+    userAgent &&
+    blacklist.some((agent) => userAgent.includes(agent)) &&
+    !userAgent.includes("nokia")
+  ) {
+    throw new HTTPException(400, {
+      message: "Unsupported browser",
+    });
+  }
+
+  const { v } = c.req.query();
   if (!v) {
     throw new HTTPException(400, {
       message: "Missing video ID",
@@ -47,7 +58,6 @@ router.get("/watch", async (c) => {
   }
 
   const videoUrl = await c.get("kv").get([v]);
-
   if (!videoUrl.value) {
     throw new HTTPException(404, { message: "Video URL not found" });
   }
