@@ -5,7 +5,6 @@ import { z } from "zod";
 import Innertube, { ProtoUtils, Utils } from "youtubei.js/cf-worker";
 import BG from "bgutils-js";
 import { Context } from "hono";
-import { YTB_LINK_TTL } from "../core/index.ts";
 
 export const message = {
   INVALID_VIDEO_ID: "Invalid video ID",
@@ -69,21 +68,25 @@ export function fetchFunction(
     ? input
     : new URL(input.url);
 
-  const proxyUrl = `https://${
+  if (!url.pathname.includes("v1")) {
+    return fetch(input, init);
+  }
+
+  let proxyUrl = `https://${
     Deno.env.get("YTB_PROXY_URL")
-  }?__host=${url.href}`;
+  }/proxy.php?__host=${url.href}`;
+
   const headers = new Headers(
     init?.headers || (input instanceof Request ? input.headers : undefined),
   );
 
   if (url.pathname.includes("v1/player")) {
-    url.searchParams.set(
-      "$fields",
-      "playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking",
-    );
+    proxyUrl +=
+      `&$fields=playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking`;
   }
 
-  url.searchParams.set("__headers", JSON.stringify([...headers]));
+  proxyUrl += `&__headers=${JSON.stringify([...headers])}`;
+
   const request = new Request(
     proxyUrl,
     input instanceof Request ? input : undefined,
@@ -107,7 +110,7 @@ export const saveVideoUrl = async (
   videoId: string,
   videoUrl: string,
 ) => {
-  await fetch(`https://${Deno.env.get("YTB_PROXY_URL")}/kv`, {
+  await fetch(`https://${Deno.env.get("YTB_PROXY_URL")}/save.php`, {
     method: "POST",
     body: JSON.stringify({
       key: videoId,
@@ -130,28 +133,12 @@ export const generatePoToken = () => {
 
 export const getVideoInfo = async (
   c: Context,
-  { useCFWorker, id }: { useCFWorker: boolean; id: string },
+  id: string,
 ) => {
-  const innertube = c.get(useCFWorker ? "innertubeCFWorker" : "innertube");
+  const innertube = c.get("innertube");
   const { url, format } = await getDownloadLink(innertube, id);
 
-  await (useCFWorker
-    ? saveVideoUrl(id, url)
-    : c.get("kv").set([id], url, { expireIn: YTB_LINK_TTL }));
+  await saveVideoUrl(id, url);
 
-  if (useCFWorker) {
-    console.warn("[INFO] Using CF Worker", id);
-  } else {
-    console.warn("[INFO] Using Deno", id);
-  }
-
-  return { format, useCFWorker };
-};
-
-export const tryGetVideoInfo = async (c: Context, id: string) => {
-  try {
-    return await getVideoInfo(c, { useCFWorker: true, id });
-  } catch {
-    return await getVideoInfo(c, { useCFWorker: false, id });
-  }
+  return { format };
 };

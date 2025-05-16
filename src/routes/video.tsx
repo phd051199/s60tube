@@ -2,7 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 
 import { videoIdSchema } from "../core/index.ts";
-import { filterData, tryGetVideoInfo } from "../utils/index.ts";
+import { filterData, getVideoInfo } from "../utils/index.ts";
 import { Env } from "../types.ts";
 
 import MainLayout from "../../views/MainLayout.tsx";
@@ -29,10 +29,10 @@ router.get(
   MainLayout,
   async (c) => {
     const { id } = c.req.valid("param");
-    const { format, useCFWorker } = await tryGetVideoInfo(c, id);
-    const proxyUrl = `http://${Deno.env.get("YTB_PROXY_URL")}/${
-      useCFWorker ? "v2" : "v1"
-    }/watch?v=${id}`;
+    const { format } = await getVideoInfo(c, id);
+    const proxyUrl = `http://${
+      Deno.env.get("YTB_PROXY_URL")
+    }/videoplayback.php?v=${id}`;
     return c.render(<DetailPage url={proxyUrl} format={format} />);
   },
 );

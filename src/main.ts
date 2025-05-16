@@ -17,19 +17,12 @@ const innertube = await Innertube.create({
   po_token: poToken,
   visitor_data: visitorData,
   generate_session_locally: true,
-});
-
-const innertubeCFWorker = await Innertube.create({
-  po_token: poToken,
-  visitor_data: visitorData,
-  generate_session_locally: true,
   fetch: fetchFunction,
 });
 
 app.use(async (c, next) => {
   customLogger(c);
   c.set("innertube", innertube);
-  c.set("innertubeCFWorker", innertubeCFWorker);
   c.set("kv", kv);
   await next();
 });
