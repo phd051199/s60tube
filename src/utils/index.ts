@@ -69,21 +69,18 @@ export function fetchFunction(
     ? input
     : new URL(input.url);
 
-  const proxyUrl = `https://${
-    Deno.env.get("YTB_PROXY_URL")
-  }?__host=${url.href}`;
+  if (!url.pathname.includes("v1")) {
+    return fetch(input, init);
+  }
+
+  let proxyUrl = `https://${Deno.env.get("YTB_PROXY_URL")}?__host=${url.href}`;
   const headers = new Headers(
     init?.headers || (input instanceof Request ? input.headers : undefined),
   );
-
   if (url.pathname.includes("v1/player")) {
-    url.searchParams.set(
-      "$fields",
-      "playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking",
-    );
+    proxyUrl +=
+      `&$fields=playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking`;
   }
-
-  url.searchParams.set("__headers", JSON.stringify([...headers]));
   const request = new Request(
     proxyUrl,
     input instanceof Request ? input : undefined,
