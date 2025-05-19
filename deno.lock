@@ -2,12 +2,12 @@
   "version": "5",
   "specifiers": {
     "jsr:@luanrt/jintr@*": "3.3.1",
-    "npm:@hono/zod-validator@0.5": "0.5.0_hono@4.7.9_zod@3.24.4",
+    "npm:@hono/zod-validator@0.5": "0.5.0_hono@4.7.10_zod@3.24.4",
     "npm:@types/estree@^1.0.6": "1.0.7",
     "npm:acorn@^8.8.0": "8.14.1",
     "npm:bgutils-js@^3.2.0": "3.2.0",
-    "npm:hono-rate-limiter@~0.4.2": "0.4.2_hono@4.7.9",
-    "npm:hono@^4.7.9": "4.7.9",
+    "npm:hono-rate-limiter@~0.4.2": "0.4.2_hono@4.7.10",
+    "npm:hono@^4.7.10": "4.7.10",
     "npm:lodash@*": "4.17.21",
     "npm:youtubei.js@^13.4.0": "13.4.0",
     "npm:zod@*": "3.24.4",
@@ -29,7 +29,7 @@
     "@fastify/busboy@2.1.1": {
       "integrity": "sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA=="
     },
-    "@hono/zod-validator@0.5.0_hono@4.7.9_zod@3.24.4": {
+    "@hono/zod-validator@0.5.0_hono@4.7.10_zod@3.24.4": {
       "integrity": "sha512-ds5bW6DCgAnNHP33E3ieSbaZFd5dkV52ZjyaXtGoR06APFrCtzAsKZxTHwOrJNBdXsi0e5wNwo5L4nVEVnJUdg==",
       "dependencies": [
         "hono",
@@ -46,14 +46,14 @@
     "bgutils-js@3.2.0": {
       "integrity": "sha512-CacO15JvxbclbLeCAAm9DETGlLuisRGWpPigoRvNsccSCPEC4pwYwA2g2x/pv7Om/sk79d4ib35V5HHmxPBpDg=="
     },
-    "hono-rate-limiter@0.4.2_hono@4.7.9": {
+    "hono-rate-limiter@0.4.2_hono@4.7.10": {
       "integrity": "sha512-AAtFqgADyrmbDijcRTT/HJfwqfvhalya2Zo+MgfdrMPas3zSMD8SU03cv+ZsYwRU1swv7zgVt0shwN059yzhjw==",
       "dependencies": [
         "hono"
       ]
     },
-    "hono@4.7.9": {
-      "integrity": "sha512-/EsCoR5h7N4yu01TDu9GMCCJa6ZLk5ZJIWFFGNawAXmd1Tp53+Wir4xm0D2X19bbykWUlzQG0+BvPAji6p9E8Q=="
+    "hono@4.7.10": {
+      "integrity": "sha512-QkACju9MiN59CKSY5JsGZCYmPZkA6sIW6OFCUp7qDjZu6S6KHtJHhAc9Uy9mV9F8PJ1/HQ3ybZF2yjCa/73fvQ=="
     },
     "jintr@3.3.1": {
       "integrity": "sha512-nnOzyhf0SLpbWuZ270Omwbj5LcXUkTcZkVnK8/veJXtSZOiATM5gMZMdmzN75FmTyj+NVgrGaPdH12zIJ24oIA==",
@@ -762,7 +762,7 @@
       "npm:@hono/zod-validator@0.5",
       "npm:bgutils-js@^3.2.0",
       "npm:hono-rate-limiter@~0.4.2",
-      "npm:hono@^4.7.9",
+      "npm:hono@^4.7.10",
       "npm:youtubei.js@^13.4.0",
       "npm:zod@^3.24.4"
     ]

@@ -1,7 +1,7 @@
 {
   "imports": {
     "bgutils-js": "npm:bgutils-js@^3.2.0",
-    "hono": "npm:hono@^4.7.9",
+    "hono": "npm:hono@^4.7.10",
     "zod": "npm:zod@^3.24.4",
     "@hono/zod-validator": "npm:@hono/zod-validator@^0.5.0",
     "hono-rate-limiter": "npm:hono-rate-limiter@^0.4.2",
@@ -9,8 +9,8 @@
     "lodash": "https://cdn.skypack.dev/lodash"
   },
   "tasks": {
-    "dev": "deno run --watch --env-file=.env --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
-    "start": "deno run --env-file=.env --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
+    "dev": "deno run --watch --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
+    "start": "deno run --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
     "deploy": "deployctl deploy --prod"
   },
   "compilerOptions": {
@@ -21,8 +21,7 @@
     "project": "bb79a90e-e05d-4b0d-aa11-0ef70f40e56c",
     "exclude": ["**/node_modules"],
     "include": [],
-    "entrypoint": "src/main.ts",
-    "env": ["YTB_PROXY_URL"]
+    "entrypoint": "src/main.ts"
   },
   "lint": {
     "rules": {

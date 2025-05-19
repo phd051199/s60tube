@@ -179,6 +179,36 @@ const SearchPage: FC = ({ q, data }) => {
                 </tbody>
               </table>
 
+              {/* Search Results Title */}
+              <table width="100%" style={{ marginLeft: 2, marginTop: 6 }}>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div
+                        style={{
+                          color: "#333",
+                          borderBottom: "1px solid #ebebeb",
+                          paddingBottom: "6px",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ marginRight: "5px" }}>🔍</span>
+                        {q ? `Search results for "${q}"` : "Trending videos"}
+                        <span
+                          style={{
+                            marginLeft: "8px",
+                            color: "#606060",
+                          }}
+                        >
+                          {data?.length > 0 ? `(${data.length} results)` : ""}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
               {/* Main Content - Videos */}
               <table width="100%">
                 <tbody>
