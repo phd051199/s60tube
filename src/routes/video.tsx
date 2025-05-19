@@ -5,7 +5,6 @@ import { videoIdSchema } from "../core/index.ts";
 import { Env } from "../types.ts";
 import { filterData, getVideoInfo } from "../utils/index.ts";
 
-import { HTTPException } from "hono/http-exception";
 import MainLayout from "../../views/MainLayout.tsx";
 import SearchPage from "../../views/Search.tsx";
 import DetailPage from "../../views/VideoDetail.tsx";
@@ -30,31 +29,9 @@ router.get(
   async (c) => {
     const { id } = c.req.valid("param");
     const { format } = await getVideoInfo(c, id);
-    const proxyUrl = `https://${Deno.env.get(
-      "YTB_PROXY_URL"
-    )}/videoplayback?v=${id}`;
+    const proxyUrl = `http://ytb-prx.dph.workers.dev/videoplayback?v=${id}`;
     return c.render(<DetailPage url={proxyUrl} format={format} />);
-  }
+  },
 );
-
-router.get("/watch", async (c) => {
-  const { v } = c.req.query();
-
-  if (!v) {
-    throw new HTTPException(400, {
-      message: "Missing video ID",
-    });
-  }
-
-  const videoUrl = await c.get("kv").get([v]);
-
-  if (!videoUrl.value) {
-    throw new HTTPException(404, { message: "Video URL not found" });
-  }
-
-  return fetch(videoUrl.value as string, {
-    headers: c.req.header(),
-  });
-});
 
 export default router;

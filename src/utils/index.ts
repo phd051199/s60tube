@@ -1,23 +1,14 @@
 import BG from "bgutils-js";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { sign } from "hono/jwt";
 import _ from "lodash";
 import Innertube, { ProtoUtils, Utils } from "youtubei.js/cf-worker";
 import { z } from "zod";
 
 export const message = {
   INVALID_VIDEO_ID: "Invalid video ID",
-  INVALID_TOKEN: "Invalid token",
   VIDEO_NOT_FOUND: "Video not found",
-  INVALID_CERTIFICATE: "Invalid certificate",
 };
-
-export const signToken = (
-  sub: string,
-  secret: string,
-  exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24
-) => sign({ sub, exp }, secret);
 
 export const vIdSchema = z.string().regex(/^[a-zA-Z0-9_-]{11}$/, {
   message: message.INVALID_VIDEO_ID,
@@ -34,7 +25,7 @@ export const filterData = (data: any) => {
 
 export const getDownloadLink = async (
   innertube: Innertube,
-  videoId: string
+  videoId: string,
 ) => {
   try {
     const info = await innertube.getBasicInfo(videoId).catch((error) => {
@@ -60,34 +51,32 @@ export const getDownloadLink = async (
 
 export function fetchFunction(
   input: string | Request | URL,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<Response> {
-  const url =
-    typeof input === "string"
-      ? new URL(input)
-      : input instanceof URL
-      ? input
-      : new URL(input.url);
+  const url = typeof input === "string"
+    ? new URL(input)
+    : input instanceof URL
+    ? input
+    : new URL(input.url);
 
   if (!url.pathname.includes("v1")) {
     return fetch(input, init);
   }
 
-  let proxyUrl = `https://${Deno.env.get(
-    "YTB_PROXY_URL"
-  )}/reverse-proxy?__host=${url.href}`;
+  let proxyUrl = `https://dph.io.vn/reverse-proxy?__host=${url.href}`;
 
   const headers = new Headers(
-    init?.headers || (input instanceof Request ? input.headers : undefined)
+    init?.headers || (input instanceof Request ? input.headers : undefined),
   );
 
   if (url.pathname.includes("v1/player")) {
-    proxyUrl += `&$fields=playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking`;
+    proxyUrl +=
+      `&$fields=playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking`;
   }
 
   const request = new Request(
     proxyUrl,
-    input instanceof Request ? input : undefined
+    input instanceof Request ? input : undefined,
   );
   headers.delete("user-agent");
 
@@ -95,17 +84,17 @@ export function fetchFunction(
     request,
     init
       ? {
-          ...init,
-          headers,
-        }
+        ...init,
+        headers,
+      }
       : {
-          headers,
-        }
+        headers,
+      },
   );
 }
 
 export const saveVideoUrl = async (videoId: string, videoUrl: string) => {
-  await fetch(`https://${Deno.env.get("YTB_PROXY_URL")}/kv`, {
+  await fetch(`https://dph.io.vn/kv`, {
     method: "POST",
     body: JSON.stringify({
       key: videoId,
@@ -117,12 +106,10 @@ export const saveVideoUrl = async (videoId: string, videoUrl: string) => {
 export const generatePoToken = () => {
   const visitorData = ProtoUtils.encodeVisitorData(
     Utils.generateRandomString(11),
-    Math.floor(Date.now() / 1000)
+    Math.floor(Date.now() / 1000),
   );
   const poToken = BG.PoToken.generateColdStartToken(visitorData);
 
-  console.log("Generating PO token", poToken);
-  console.log("Visitor data", visitorData);
   return { poToken, visitorData };
 };
 

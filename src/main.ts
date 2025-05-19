@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { serveStatic } from "hono/deno";
 import { Innertube } from "youtubei.js/cf-worker";
 
 import { customLogger, useErrorHandler } from "./core/index.ts";
@@ -13,6 +12,8 @@ const app = new Hono<Env>();
 const { poToken, visitorData } = generatePoToken();
 
 const innertube = await Innertube.create({
+  lang: "en",
+  location: "VN",
   po_token: poToken,
   visitor_data: visitorData,
   generate_session_locally: true,
@@ -24,9 +25,6 @@ app.use(async (c, next) => {
   c.set("innertube", innertube);
   await next();
 });
-
-app.use("/static/*", serveStatic({ root: "./" }));
-app.get("/robots.txt", serveStatic({ path: "./static/robots.txt" }));
 
 app.route("/", homeRouter);
 app.route("/", videoRouter);
