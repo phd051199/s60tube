@@ -52,6 +52,18 @@ app.use(async (c, next) => {
   }
 });
 
+app.get("/channel/:id", async (c) => {
+  const {
+    payload: { browseId: channelId },
+  } = await c
+    .get("innertube")
+    .resolveURL(`https://www.youtube.com/@${c.req.param("id")}`);
+
+  const result = await c.get("innertube").getChannel(channelId);
+
+  return c.json(result);
+});
+
 app.route("/", homeRouter);
 app.route("/", videoRouter);
 

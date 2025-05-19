@@ -15,12 +15,33 @@ export const vIdSchema = z.string().regex(/^[a-zA-Z0-9_-]{11}$/, {
 });
 
 export const filterData = (data: any) => {
-  return _.reject(data.videos, (item: any) => {
+  const filteredVideos = _.reject(data.videos, (item: any) => {
     const id = _.get(item, "id");
     const durationSeconds = _.get(item, "duration.seconds");
 
     return !id || !durationSeconds;
   });
+
+  return filteredVideos.map((item: any) => ({
+    id: _.get(item, "id"),
+    thumbnail_overlays: _.get(item, "thumbnail_overlays"),
+    title: {
+      text: _.get(item, "title.text", ""),
+    },
+    short_view_count: {
+      text: _.get(item, "short_view_count.text", ""),
+    },
+    published: {
+      text: _.get(item, "published.text", ""),
+    },
+    author: {
+      name: _.get(item, "author.name", ""),
+    },
+    duration: {
+      text: _.get(item, "duration.text", ""),
+      seconds: _.get(item, "duration.seconds", 0),
+    },
+  }));
 };
 
 export const getDownloadLink = async (

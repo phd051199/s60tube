@@ -14,7 +14,7 @@ import SearchPage from "../../views/Search.tsx";
 import DetailPage from "../../views/VideoDetail.tsx";
 
 type SearchCacheData = {
-  paginatedData: any[];
+  allFilteredData: any[];
   totalItems: number;
 };
 
@@ -28,13 +28,21 @@ router.get("/search", MainLayout, async (c) => {
 
   const page = parseInt(c.req.query("page") || "1", 10);
   const itemsPerPage = 10;
-  const cacheKey = `search:${q}:${page}`;
+  const cacheKey = `search:${q}`;
+
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
 
   const cachedData = searchCache.get(cacheKey);
   if (cachedData) {
+    const paginatedData = cachedData.allFilteredData.slice(
+      startIndex,
+      endIndex,
+    );
+
     return c.render(
       <SearchPage
-        data={cachedData.paginatedData}
+        data={paginatedData}
         q={q}
         pagination={{
           currentPage: page,
@@ -53,12 +61,12 @@ router.get("/search", MainLayout, async (c) => {
   const filteredData = filterData(result);
   const totalItems = filteredData.length;
 
-  const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  searchCache.set(cacheKey, {
+    allFilteredData: filteredData,
+    totalItems,
+  });
 
   const paginatedData = filteredData.slice(startIndex, endIndex);
-
-  searchCache.set(cacheKey, { paginatedData, totalItems });
 
   c.header("Cache-Control", "public, max-age=300");
 
@@ -82,17 +90,29 @@ router.get(
   zValidator("param", videoIdSchema),
   MainLayout,
   async (c) => {
-    const { id } = c.req.valid("param");
-    const { format } = await getVideoInfo(c, id);
+    try {
+      const { id } = c.req.valid("param");
+      const { format } = await getVideoInfo(c, id).catch();
 
-    c.header("Cache-Control", "public, max-age=3600");
+      c.header("Cache-Control", "public, max-age=3600");
 
-    return c.render(
-      <DetailPage
-        url={`http://ytb-prx.dph.workers.dev/videoplayback?v=${id}`}
-        format={format}
-      />,
-    );
+      return c.render(
+        <DetailPage
+          url={`http://ytb-prx.dph.workers.dev/videoplayback?v=${id}`}
+          format={format}
+        />,
+      );
+    } catch {
+      return c.json(
+        {
+          code: 503,
+          error: "Service Unavailable",
+          message:
+            "YouTube service may be temporarily unavailable. Please try again later.",
+        },
+        503,
+      );
+    }
   },
 );
 
