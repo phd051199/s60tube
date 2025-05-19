@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 
-import { videoIdSchema } from "../core/index.ts";
+import { limiter, videoIdSchema } from "../core/index.ts";
 import { Env } from "../types.ts";
 import { filterData, getVideoInfo } from "../utils/index.ts";
 
@@ -24,13 +24,19 @@ router.get("/search", MainLayout, async (c) => {
 
 router.get(
   "/video/:id",
+  limiter,
   zValidator("param", videoIdSchema),
   MainLayout,
   async (c) => {
     const { id } = c.req.valid("param");
     const { format } = await getVideoInfo(c, id);
-    const proxyUrl = `http://ytb-prx.dph.workers.dev/videoplayback?v=${id}`;
-    return c.render(<DetailPage url={proxyUrl} format={format} />);
+
+    return c.render(
+      <DetailPage
+        url={`http://ytb-prx.dph.workers.dev/videoplayback?v=${id}`}
+        format={format}
+      />,
+    );
   },
 );
 

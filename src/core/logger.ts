@@ -1,4 +1,5 @@
 import { Context } from "hono";
+import { getConnInfo } from "hono/deno";
 
 export const customLogger = (c: Context) => {
   console.log(
@@ -7,6 +8,6 @@ export const customLogger = (c: Context) => {
     c.req.path,
     c.req.query(),
     c.req.header("user-agent"),
-    c.req.header("x-forwarded-for"),
+    getConnInfo(c).remote.address,
   );
 };

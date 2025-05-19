@@ -63,19 +63,12 @@ export function fetchFunction(
     return fetch(input, init);
   }
 
-  let proxyUrl = `https://dph.io.vn/reverse-proxy?__host=${url.href}`;
-
   const headers = new Headers(
     init?.headers || (input instanceof Request ? input.headers : undefined),
   );
 
-  if (url.pathname.includes("v1/player")) {
-    proxyUrl +=
-      `&$fields=playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking`;
-  }
-
   const request = new Request(
-    proxyUrl,
+    `https://dph.io.vn/?__host=${url.href}`,
     input instanceof Request ? input : undefined,
   );
   headers.delete("user-agent");

@@ -193,8 +193,15 @@ const SearchPage: FC = ({ q, data }) => {
                           alignItems: "center",
                         }}
                       >
-                        <span style={{ marginRight: "5px" }}>🔍</span>
-                        {q ? `Search results for "${q}"` : "Trending videos"}
+                        {q
+                          ? (
+                            <>
+                              Search results for "<strong>{q}</strong>"
+                            </>
+                          )
+                          : (
+                            "Trending videos"
+                          )}
                         <span
                           style={{
                             marginLeft: "8px",
