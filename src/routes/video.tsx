@@ -2,13 +2,13 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 
 import { videoIdSchema } from "../core/index.ts";
-import { filterData, getVideoInfo } from "../utils/index.ts";
 import { Env } from "../types.ts";
+import { filterData, getVideoInfo } from "../utils/index.ts";
 
+import { HTTPException } from "hono/http-exception";
 import MainLayout from "../../views/MainLayout.tsx";
 import SearchPage from "../../views/Search.tsx";
 import DetailPage from "../../views/VideoDetail.tsx";
-import { HTTPException } from "hono/http-exception";
 
 const router = new Hono<Env>();
 
@@ -30,11 +30,11 @@ router.get(
   async (c) => {
     const { id } = c.req.valid("param");
     const { format } = await getVideoInfo(c, id);
-    const proxyUrl = `http://${
-      Deno.env.get("YTB_PROXY_URL")
-    }/videoplayback.php?v=${id}`;
+    const proxyUrl = `https://${Deno.env.get(
+      "YTB_PROXY_URL"
+    )}/videoplayback?v=${id}`;
     return c.render(<DetailPage url={proxyUrl} format={format} />);
-  },
+  }
 );
 
 router.get("/watch", async (c) => {
