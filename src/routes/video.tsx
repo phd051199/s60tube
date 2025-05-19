@@ -15,11 +15,35 @@ router.get("/search", MainLayout, async (c) => {
   const q = c.req.query("q");
   if (!q) return c.redirect("/");
 
+  const page = parseInt(c.req.query("page") || "1", 10);
+  const itemsPerPage = 10;
+
   const result = await c.get("innertube").search(q, {
     sort_by: "relevance",
   });
 
-  return c.render(<SearchPage data={filterData(result)} q={q} />);
+  const filteredData = filterData(result);
+  const totalItems = filteredData.length;
+
+  // Calculate pagination bounds
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  // Slice the data for the current page
+  const paginatedData = filteredData.slice(startIndex, endIndex);
+
+  return c.render(
+    <SearchPage
+      data={paginatedData}
+      q={q}
+      pagination={{
+        currentPage: page,
+        totalItems,
+        itemsPerPage,
+        baseUrl: `/search?q=${encodeURIComponent(q)}`,
+      }}
+    />,
+  );
 });
 
 router.get(

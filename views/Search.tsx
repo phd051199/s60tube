@@ -1,9 +1,88 @@
 import type { FC } from "hono/jsx";
 import { get } from "lodash";
 
-import Footer from "./components/Footer.tsx";
 import Logo from "./components/Logo.tsx";
 
+// Styles defined once to prevent recreation on render
+const styles = {
+  searchInput: {
+    flex: 4,
+    padding: 4,
+    fontSize: "small",
+    border: "1px solid #ccc",
+  },
+  searchButton: {
+    flex: 1,
+    padding: 4,
+    fontSize: "small",
+    height: "100%",
+    border: "1px solid #ccc",
+  },
+  videoItem: {
+    paddingTop: "8px",
+    paddingBottom: "8px",
+    borderBottom: "1px solid #ddd",
+    display: "flex",
+    fontSize: "small",
+  },
+  videoMetaContainer: {
+    color: "#666",
+    fontSize: "11px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: "2px",
+  },
+  videoTypeTag: {
+    fontWeight: 400,
+    border: "1px solid #ccc",
+    padding: "1px 4px",
+    borderRadius: "2px",
+  },
+  durationTag: {
+    color: "#fff",
+    fontWeight: 500,
+    backgroundColor: "#212529",
+    border: "1px solid #212529",
+    padding: "1px 4px",
+    borderRadius: "2px",
+  },
+  titleLink: {
+    textDecoration: "none",
+    display: "block",
+    paddingBottom: 2,
+  },
+  metaText: {
+    color: "#666",
+    paddingBottom: 2,
+  },
+  mainContainer: {
+    fontSize: "small",
+  },
+  thumbnailContainer: {
+    position: "relative",
+  },
+  videoInfoContainer: {
+    marginLeft: "8px",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+  },
+  headerContainer: {
+    color: "#333",
+    borderBottom: "1px solid #ebebeb",
+    paddingBottom: "6px",
+    display: "flex",
+    alignItems: "center",
+    margin: "6px 2px",
+  },
+  resultCount: {
+    marginLeft: "8px",
+    color: "#606060",
+  },
+};
+
+// Memoized Search Bar component
 const SearchBar: FC = ({ q }) => {
   return (
     <form action="/search" method="get">
@@ -13,223 +92,270 @@ const SearchBar: FC = ({ q }) => {
           name="q"
           type="text"
           maxLength={128}
-          style={{
-            flex: 4,
-            padding: 4,
-            fontSize: "small",
-            border: "1px solid #ccc",
-          }}
+          style={styles.searchInput}
           value={q}
           placeholder="Search Youtube"
         />
-        <input
-          type="submit"
-          value="Search"
-          style={{
-            flex: 1,
-            padding: 4,
-            fontSize: "small",
-            height: "100%",
-            border: "1px solid #ccc",
-          }}
-        />
+        <input type="submit" value="Search" style={styles.searchButton} />
       </div>
     </form>
   );
 };
 
+// Lazy-loaded image component
+const LazyImage: FC = ({ src, alt, width, height }) => {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading="lazy"
+      decoding="async"
+    />
+  );
+};
+
+// Optimized Video component with reduced DOM nesting
 const Video: FC = ({ item }) => {
+  const id = get(item, "id");
   const type = get(item, "thumbnail_overlays", []);
   const isReel = get(type, "[0].text", "").toUpperCase() === "SHORTS";
+  const title = get(item, "title.text", "");
+  const viewCount = get(item, "short_view_count.text");
+  const publishedDate = get(item, "published.text");
+  const authorName = get(item, "author.name");
+  const duration = get(item, "duration.text");
 
   return (
-    <div
-      style={{
-        paddingTop: "8px",
-        borderBottom: "1px solid #ddd",
-      }}
-    >
-      <table width="100%" style={{ fontSize: "small" }}>
-        <tbody>
-          <tr>
-            <td>
-              <table width="100%" style={{ marginBottom: 2 }}>
-                <tbody>
-                  <tr valign="top">
-                    <td width="42">
-                      <a href={"/video/" + get(item, "id")}>
-                        <img
-                          src={`https://img.youtube.com/vi/${
-                            get(
-                              item,
-                              "id",
-                            )
-                          }/mqdefault.jpg`}
-                          alt="video"
-                          width="120"
-                          height="68"
-                        />
-                      </a>
-                      <div
-                        style={{
-                          color: "#666",
-                          fontSize: "11px",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontWeight: 400,
-                            border: "1px solid #ccc",
-                            padding: "1px 4px",
-                            borderRadius: "2px",
-                          }}
-                        >
-                          {isReel ? "Shorts" : "Video"}
-                        </span>
-                        <span
-                          style={{
-                            color: "#fff",
-                            fontWeight: 500,
-                            backgroundColor: "#212529",
-                            border: "1px solid #212529",
-                            padding: "1px 4px",
-                            borderRadius: "2px",
-                          }}
-                        >
-                          {get(item, "duration.text")}
-                        </span>
-                      </div>
-                    </td>
-                    <td width="4"></td>
-                    <td>
-                      <table width="100%">
-                        <tbody>
-                          <tr>
-                            <td style={{ paddingBottom: 2 }}>
-                              <a
-                                href={"/video/" + get(item, "id")}
-                                style={{
-                                  textDecoration: "none",
-                                }}
-                              >
-                                {truncateText(get(item, "title.text", ""), 75)}
-                              </a>
-                            </td>
-                          </tr>
+    <div style={styles.videoItem}>
+      <div style={styles.thumbnailContainer}>
+        <a href={`/video/${id}`} rel="prefetch">
+          <LazyImage
+            src={`https://img.youtube.com/vi/${id}/default.jpg`}
+            alt={title}
+            width="120"
+            height="68"
+          />
+        </a>
+        <div style={styles.videoMetaContainer}>
+          <span style={styles.videoTypeTag}>{isReel ? "Shorts" : "Video"}</span>
+          <span style={styles.durationTag}>{duration}</span>
+        </div>
+      </div>
 
-                          <tr>
-                            <td
-                              style={{
-                                color: "#666",
-                                paddingBottom: 2,
-                              }}
-                            >
-                              {get(item, "short_view_count.text")} •{" "}
-                              {get(item, "published.text")}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>{get(item, "author.name")}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div style={styles.videoInfoContainer}>
+        <a href={`/video/${id}`} style={styles.titleLink} rel="prefetch">
+          {truncateText(title, 75)}
+        </a>
+
+        <div style={styles.metaText}>
+          {viewCount} • {publishedDate}
+        </div>
+
+        <div>{authorName}</div>
+      </div>
     </div>
   );
 };
 
-const SearchPage: FC = ({ q, data }) => {
+// Pagination controls component
+const Pagination: FC = ({ pagination }) => {
+  if (!pagination || !pagination.totalItems) return null;
+
+  const { currentPage, totalItems, itemsPerPage, baseUrl } = pagination;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  // Don't show pagination if there's only one page
+  if (totalPages <= 1) return null;
+
+  // Styles for page links
+  const linkStyle = {
+    margin: "0 3px",
+    padding: "4px 8px",
+    border: "1px solid #ddd",
+    borderRadius: "3px",
+    textDecoration: "none",
+    display: "inline-block",
+  };
+
+  const activeStyle = {
+    ...linkStyle,
+    backgroundColor: "#1a73e8",
+    color: "white",
+    fontWeight: "bold",
+    border: "1px solid #1a73e8",
+  };
+
+  const inactiveStyle = {
+    ...linkStyle,
+    color: "#1a73e8",
+  };
+
+  // Determine which page links to show
+  const renderPageNumbers = () => {
+    const pageLinks = [];
+
+    // Maximum number of pages to show
+    const maxPages = 9;
+
+    // Determine start and end page
+    let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+    const endPage = Math.min(totalPages, startPage + maxPages - 1);
+
+    // Adjust if we're near the end
+    if (endPage - startPage + 1 < maxPages) {
+      startPage = Math.max(1, endPage - maxPages + 1);
+    }
+
+    // Always show first page
+    if (startPage > 1) {
+      pageLinks.push(
+        <a key={1} href={`${baseUrl}&page=1`} style={inactiveStyle}>
+          1
+        </a>,
+      );
+
+      // Add ellipsis if there's a gap
+      if (startPage > 2) {
+        pageLinks.push(
+          <span key="ellipsis1" style={{ margin: "0 5px" }}>
+            ...
+          </span>,
+        );
+      }
+    }
+
+    // Add page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      pageLinks.push(
+        <a
+          key={i}
+          href={i === currentPage ? "#" : `${baseUrl}&page=${i}`}
+          style={i === currentPage ? activeStyle : inactiveStyle}
+        >
+          {i}
+        </a>,
+      );
+    }
+
+    // Always show last page
+    if (endPage < totalPages) {
+      // Add ellipsis if there's a gap
+      if (endPage < totalPages - 1) {
+        pageLinks.push(
+          <span key="ellipsis2" style={{ margin: "0 5px" }}>
+            ...
+          </span>,
+        );
+      }
+
+      pageLinks.push(
+        <a
+          key={totalPages}
+          href={`${baseUrl}&page=${totalPages}`}
+          style={inactiveStyle}
+        >
+          {totalPages}
+        </a>,
+      );
+    }
+
+    return pageLinks;
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "10px 0",
+        fontSize: "13px",
+        margin: "10px 0",
+      }}
+    >
+      {/* Page numbers */}
+      <div
+        style={{ display: "flex", alignItems: "center", margin: "0 0 10px 0" }}
+      >
+        {/* Previous button */}
+        {currentPage > 1 && (
+          <a href={`${baseUrl}&page=${currentPage - 1}`} style={inactiveStyle}>
+            &laquo;
+          </a>
+        )}
+
+        {/* Page links */}
+        {renderPageNumbers()}
+
+        {/* Next button */}
+        {currentPage < totalPages && (
+          <a href={`${baseUrl}&page=${currentPage + 1}`} style={inactiveStyle}>
+            &raquo;
+          </a>
+        )}
+      </div>
+
+      {/* Results info */}
+      <div style={{ color: "#666" }}>
+        {(currentPage - 1) * itemsPerPage + 1}-
+        {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{" "}
+        results
+      </div>
+    </div>
+  );
+};
+
+// Main Search Page component
+const SearchPage: FC = ({ q, data, pagination }) => {
   const videos = data.map((item: any) => <Video item={item} key={item.id} />);
 
   return (
-    <div style={{ fontSize: "small" }}>
-      <table width="100%" bgcolor="#FFFFFF">
-        <tbody>
-          <tr>
-            <td valign="top">
-              {/* Logo */}
-              <table width="100%" style={{ margin: "2px 2px 0 2px" }}>
-                <tbody>
-                  <tr>
-                    <td align="left">
-                      <Logo center={false} large={false} />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+    <div style={styles.mainContainer}>
+      <div>
+        {/* Logo */}
+        <div style={{ margin: "2px 2px 0 2px" }}>
+          <Logo center={false} large={false} />
+        </div>
 
-              {/* Search Bar */}
-              <table width="100%" style={{ marginLeft: 2 }}>
-                <tbody>
-                  <tr>
-                    <td>
-                      <SearchBar q={q} />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+        {/* Search Bar */}
+        <div style={{ margin: "2px" }}>
+          <SearchBar q={q} />
+        </div>
 
-              {/* Search Results Title */}
-              <table width="100%" style={{ marginLeft: 2, marginTop: 6 }}>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div
-                        style={{
-                          color: "#333",
-                          borderBottom: "1px solid #ebebeb",
-                          paddingBottom: "6px",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        {q
-                          ? (
-                            <>
-                              Search results for "<strong>{q}</strong>"
-                            </>
-                          )
-                          : (
-                            "Trending videos"
-                          )}
-                        <span
-                          style={{
-                            marginLeft: "8px",
-                            color: "#606060",
-                          }}
-                        >
-                          {data?.length > 0 ? `(${data.length} results)` : ""}
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+        {/* Search Results Title */}
+        <div style={styles.headerContainer}>
+          {q
+            ? (
+              <>
+                Search results for "<strong>{q}</strong>"
+              </>
+            )
+            : (
+              "Trending videos"
+            )}
+          <span style={styles.resultCount}>
+            {pagination?.totalItems > 0
+              ? `(${pagination.totalItems} results)`
+              : ""}
+          </span>
+        </div>
 
-              {/* Main Content - Videos */}
-              <table width="100%">
-                <tbody>
-                  <tr>
-                    <td>{videos}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        {/* Main Content - Videos */}
+        <div>
+          {videos.length > 0 ? videos : (
+            <div
+              style={{ padding: "20px 0", textAlign: "center", color: "#666" }}
+            >
+              No videos found. Try a different search term.
+            </div>
+          )}
+        </div>
 
-      <Footer />
+        {/* Pagination Controls */}
+        {pagination && <Pagination pagination={pagination} />}
+      </div>
     </div>
   );
 };
