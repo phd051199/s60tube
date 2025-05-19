@@ -1,24 +1,14 @@
-import _ from "lodash";
-import { HTTPException } from "hono/http-exception";
-import { sign } from "hono/jwt";
-import { z } from "zod";
-import Innertube, { ProtoUtils, Utils } from "youtubei.js/cf-worker";
 import BG from "bgutils-js";
 import { Context } from "hono";
-import { YTB_LINK_TTL } from "../core/index.ts";
+import { HTTPException } from "hono/http-exception";
+import _ from "lodash";
+import Innertube, { ProtoUtils, Utils } from "youtubei.js/cf-worker";
+import { z } from "zod";
 
 export const message = {
   INVALID_VIDEO_ID: "Invalid video ID",
-  INVALID_TOKEN: "Invalid token",
   VIDEO_NOT_FOUND: "Video not found",
-  INVALID_CERTIFICATE: "Invalid certificate",
 };
-
-export const signToken = (
-  sub: string,
-  secret: string,
-  exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-) => sign({ sub, exp }, secret);
 
 export const vIdSchema = z.string().regex(/^[a-zA-Z0-9_-]{11}$/, {
   message: message.INVALID_VIDEO_ID,
@@ -69,21 +59,21 @@ export function fetchFunction(
     ? input
     : new URL(input.url);
 
-  const proxyUrl = `https://${
-    Deno.env.get("YTB_PROXY_URL")
-  }?__host=${url.href}`;
+  if (!url.pathname.includes("v1")) {
+    return fetch(input, init);
+  }
+
+  let proxyUrl = `https://dph.io.vn/reverse-proxy?__host=${url.href}`;
+
   const headers = new Headers(
     init?.headers || (input instanceof Request ? input.headers : undefined),
   );
 
   if (url.pathname.includes("v1/player")) {
-    url.searchParams.set(
-      "$fields",
-      "playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking",
-    );
+    proxyUrl +=
+      `&$fields=playerConfig,captions,playabilityStatus,streamingData,responseContext.mainAppWebResponseContext.datasyncId,videoDetails.isLive,videoDetails.isLiveContent,videoDetails.title,videoDetails.author,playbackTracking`;
   }
 
-  url.searchParams.set("__headers", JSON.stringify([...headers]));
   const request = new Request(
     proxyUrl,
     input instanceof Request ? input : undefined,
@@ -103,11 +93,8 @@ export function fetchFunction(
   );
 }
 
-export const saveVideoUrl = async (
-  videoId: string,
-  videoUrl: string,
-) => {
-  await fetch(`https://${Deno.env.get("YTB_PROXY_URL")}/kv`, {
+export const saveVideoUrl = async (videoId: string, videoUrl: string) => {
+  await fetch(`https://dph.io.vn/kv`, {
     method: "POST",
     body: JSON.stringify({
       key: videoId,
@@ -123,35 +110,14 @@ export const generatePoToken = () => {
   );
   const poToken = BG.PoToken.generateColdStartToken(visitorData);
 
-  console.log("Generating PO token", poToken);
-  console.log("Visitor data", visitorData);
   return { poToken, visitorData };
 };
 
-export const getVideoInfo = async (
-  c: Context,
-  { useCFWorker, id }: { useCFWorker: boolean; id: string },
-) => {
-  const innertube = c.get(useCFWorker ? "innertubeCFWorker" : "innertube");
+export const getVideoInfo = async (c: Context, id: string) => {
+  const innertube = c.get("innertube");
   const { url, format } = await getDownloadLink(innertube, id);
 
-  await (useCFWorker
-    ? saveVideoUrl(id, url)
-    : c.get("kv").set([id], url, { expireIn: YTB_LINK_TTL }));
+  await saveVideoUrl(id, url);
 
-  if (useCFWorker) {
-    console.warn("[INFO] Using CF Worker", id);
-  } else {
-    console.warn("[INFO] Using Deno", id);
-  }
-
-  return { format, useCFWorker };
-};
-
-export const tryGetVideoInfo = async (c: Context, id: string) => {
-  try {
-    return await getVideoInfo(c, { useCFWorker: true, id });
-  } catch {
-    return await getVideoInfo(c, { useCFWorker: false, id });
-  }
+  return { format };
 };

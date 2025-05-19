@@ -2,13 +2,12 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 
 import { videoIdSchema } from "../core/index.ts";
-import { filterData, tryGetVideoInfo } from "../utils/index.ts";
 import { Env } from "../types.ts";
+import { filterData, getVideoInfo } from "../utils/index.ts";
 
 import MainLayout from "../../views/MainLayout.tsx";
 import SearchPage from "../../views/Search.tsx";
 import DetailPage from "../../views/VideoDetail.tsx";
-import { HTTPException } from "hono/http-exception";
 
 const router = new Hono<Env>();
 
@@ -29,32 +28,10 @@ router.get(
   MainLayout,
   async (c) => {
     const { id } = c.req.valid("param");
-    const { format, useCFWorker } = await tryGetVideoInfo(c, id);
-    const proxyUrl = `http://${Deno.env.get("YTB_PROXY_URL")}/${
-      useCFWorker ? "v2" : "v1"
-    }/watch?v=${id}`;
+    const { format } = await getVideoInfo(c, id);
+    const proxyUrl = `http://ytb-prx.dph.workers.dev/videoplayback?v=${id}`;
     return c.render(<DetailPage url={proxyUrl} format={format} />);
   },
 );
-
-router.get("/watch", async (c) => {
-  const { v } = c.req.query();
-
-  if (!v) {
-    throw new HTTPException(400, {
-      message: "Missing video ID",
-    });
-  }
-
-  const videoUrl = await c.get("kv").get([v]);
-
-  if (!videoUrl.value) {
-    throw new HTTPException(404, { message: "Video URL not found" });
-  }
-
-  return fetch(videoUrl.value as string, {
-    headers: c.req.header(),
-  });
-});
 
 export default router;

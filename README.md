@@ -12,15 +12,6 @@ deno task dev
 deno task start
 ```
 
-## Environment Variables
-
-This project uses environment variables for configuration. Create a `.env` file
-in the root directory with the following variables:
-
-```
-YTB_PROXY_URL=your_proxy_url
-```
-
 ## Deployment to Deno Deploy
 
 When deploying to Deno Deploy, you need to set environment variables in the Deno
