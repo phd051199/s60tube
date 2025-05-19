@@ -1,6 +1,6 @@
-import type { FC } from "hono/jsx";
+import { type FC, memo } from "hono/jsx";
 
-const StreamingInstructions: FC = () => {
+const StreamingInstructions: FC = memo(() => {
   return (
     <>
       <h2 style={styles.h2}>Streaming</h2>
@@ -25,9 +25,9 @@ const StreamingInstructions: FC = () => {
       </p>
     </>
   );
-};
+});
 
-const DownloadSection: FC<{ url: string; format: any }> = (props) => {
+const DownloadSection: FC<{ url: string; format: any }> = memo((props) => {
   return (
     <div style={styles.downloadSection}>
       <h2 style={styles.h2}>Download</h2>
@@ -53,9 +53,7 @@ const DownloadSection: FC<{ url: string; format: any }> = (props) => {
           <b>MIME:</b>
           {" "}
         </span>
-        <span>
-          {props.format.mime_type}
-        </span>
+        <span>{props.format.mime_type}</span>
       </div>
 
       <a href={props.url} style={styles.downloadLink}>
@@ -63,19 +61,27 @@ const DownloadSection: FC<{ url: string; format: any }> = (props) => {
       </a>
     </div>
   );
-};
+});
 
-const DetailPage: FC<{ url: string; format: any }> = (props) => {
+const DetailPage: FC<{ url: string; format: any }> = memo((props) => {
   return (
     <main style={styles.container}>
       <div style={styles.content}>
         <StreamingInstructions />
-        <input style={styles.input} value={props.url} />
+        <input
+          style={styles.input}
+          value={props.url}
+          onClick={(e) => {
+            const target = e.currentTarget as any;
+            target.select();
+            console.log("User clicked to copy URL");
+          }}
+        />
         <DownloadSection url={props.url} format={props.format} />
       </div>
     </main>
   );
-};
+});
 
 const styles = {
   container: {
@@ -111,6 +117,11 @@ const styles = {
     boxSizing: "border-box",
     overflow: "hidden",
     textOverflow: "ellipsis",
+    cursor: "pointer",
+    padding: "8px",
+    backgroundColor: "#f5f5f5",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
   },
   downloadSection: {
     margin: "16px 0px",

@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { etag } from "hono/etag";
 import { Innertube, Log } from "youtubei.js/cf-worker";
 
 import { customLogger, useErrorHandler } from "./core/index.ts";
@@ -8,20 +9,47 @@ import homeRouter from "./routes/home.tsx";
 import videoRouter from "./routes/video.tsx";
 import { fetchFunction } from "./utils/index.ts";
 
-const app = new Hono<Env>();
-const innertube = await Innertube.create({
-  lang: "en",
-  location: "VN",
-  fetch: fetchFunction,
-  generate_session_locally: false,
-});
+let innertubeInstance: Innertube | null = null;
 
-Log.setLevel(Log.Level.ERROR);
+async function getInnertubeClient() {
+  if (!innertubeInstance) {
+    innertubeInstance = await Innertube.create({
+      lang: "en",
+      location: "VN",
+      fetch: fetchFunction,
+      generate_session_locally: false,
+    });
+    Log.setLevel(Log.Level.ERROR);
+  }
+  return innertubeInstance;
+}
+
+const app = new Hono<Env>();
+const innertube = await getInnertubeClient();
+
+app.use(etag());
 
 app.use(async (c, next) => {
-  customLogger(c);
+  if (Deno.env.get("DENO_ENV") !== "production") {
+    customLogger(c);
+  }
+
   c.set("innertube", innertube);
+
+  c.header("X-Content-Type-Options", "nosniff");
+  c.header("Referrer-Policy", "no-referrer");
+
   await next();
+
+  if (!c.res.headers.get("Cache-Control")) {
+    if (c.req.path === "/") {
+      c.header("Cache-Control", "public, max-age=86400");
+    } else if (c.req.path.includes("/static/")) {
+      c.header("Cache-Control", "public, max-age=86400");
+    } else {
+      c.header("Cache-Control", "public, max-age=60");
+    }
+  }
 });
 
 app.route("/", homeRouter);
@@ -29,4 +57,11 @@ app.route("/", videoRouter);
 
 useErrorHandler(app);
 
-Deno.serve(app.fetch);
+Deno.serve(
+  {
+    onListen: ({ hostname, port }) => {
+      console.log(`S60Tube server running on http://${hostname}:${port}`);
+    },
+  },
+  app.fetch,
+);

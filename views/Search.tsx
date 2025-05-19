@@ -1,9 +1,8 @@
-import type { FC } from "hono/jsx";
+import { type FC, memo } from "hono/jsx";
 import { get } from "lodash";
 
 import Logo from "./components/Logo.tsx";
 
-// Styles defined once to prevent recreation on render
 const styles = {
   searchInput: {
     flex: 4,
@@ -82,8 +81,7 @@ const styles = {
   },
 };
 
-// Memoized Search Bar component
-const SearchBar: FC = ({ q }) => {
+const SearchBar: FC = memo(({ q }) => {
   return (
     <form action="/search" method="get">
       <div style={{ display: "flex" }}>
@@ -100,10 +98,12 @@ const SearchBar: FC = ({ q }) => {
       </div>
     </form>
   );
-};
+});
 
-// Lazy-loaded image component
-const LazyImage: FC = ({ src, alt, width, height }) => {
+const LazyImage: FC = memo(({ src, alt, width, height }) => {
+  const placeholder =
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 68'%3E%3Crect width='120' height='68' fill='%23f1f1f1'/%3E%3C/svg%3E";
+
   return (
     <img
       src={src}
@@ -112,12 +112,16 @@ const LazyImage: FC = ({ src, alt, width, height }) => {
       height={height}
       loading="lazy"
       decoding="async"
+      style={{ backgroundColor: "#f1f1f1" }}
+      onError={(e: any) => {
+        const target = e.currentTarget as any;
+        target.src = placeholder;
+      }}
     />
   );
-};
+});
 
-// Optimized Video component with reduced DOM nesting
-const Video: FC = ({ item }) => {
+const Video: FC = memo(({ item }) => {
   const id = get(item, "id");
   const type = get(item, "thumbnail_overlays", []);
   const isReel = get(type, "[0].text", "").toUpperCase() === "SHORTS";
@@ -157,19 +161,16 @@ const Video: FC = ({ item }) => {
       </div>
     </div>
   );
-};
+});
 
-// Pagination controls component
-const Pagination: FC = ({ pagination }) => {
+const Pagination: FC = memo(({ pagination }) => {
   if (!pagination || !pagination.totalItems) return null;
 
   const { currentPage, totalItems, itemsPerPage, baseUrl } = pagination;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // Don't show pagination if there's only one page
   if (totalPages <= 1) return null;
 
-  // Styles for page links
   const linkStyle = {
     margin: "0 3px",
     padding: "4px 8px",
@@ -181,34 +182,29 @@ const Pagination: FC = ({ pagination }) => {
 
   const activeStyle = {
     ...linkStyle,
-    backgroundColor: "#1a73e8",
+    backgroundColor: "#333",
     color: "white",
     fontWeight: "bold",
-    border: "1px solid #1a73e8",
+    border: "1px solid #333",
   };
 
   const inactiveStyle = {
     ...linkStyle,
-    color: "#1a73e8",
+    color: "#333",
   };
 
-  // Determine which page links to show
   const renderPageNumbers = () => {
     const pageLinks = [];
 
-    // Maximum number of pages to show
     const maxPages = 9;
 
-    // Determine start and end page
     let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
     const endPage = Math.min(totalPages, startPage + maxPages - 1);
 
-    // Adjust if we're near the end
     if (endPage - startPage + 1 < maxPages) {
       startPage = Math.max(1, endPage - maxPages + 1);
     }
 
-    // Always show first page
     if (startPage > 1) {
       pageLinks.push(
         <a key={1} href={`${baseUrl}&page=1`} style={inactiveStyle}>
@@ -216,7 +212,6 @@ const Pagination: FC = ({ pagination }) => {
         </a>,
       );
 
-      // Add ellipsis if there's a gap
       if (startPage > 2) {
         pageLinks.push(
           <span key="ellipsis1" style={{ margin: "0 5px" }}>
@@ -226,7 +221,6 @@ const Pagination: FC = ({ pagination }) => {
       }
     }
 
-    // Add page numbers
     for (let i = startPage; i <= endPage; i++) {
       pageLinks.push(
         <a
@@ -239,9 +233,7 @@ const Pagination: FC = ({ pagination }) => {
       );
     }
 
-    // Always show last page
     if (endPage < totalPages) {
-      // Add ellipsis if there's a gap
       if (endPage < totalPages - 1) {
         pageLinks.push(
           <span key="ellipsis2" style={{ margin: "0 5px" }}>
@@ -305,10 +297,9 @@ const Pagination: FC = ({ pagination }) => {
       </div>
     </div>
   );
-};
+});
 
-// Main Search Page component
-const SearchPage: FC = ({ q, data, pagination }) => {
+const SearchPage: FC = memo(({ q, data, pagination }) => {
   const videos = data.map((item: any) => <Video item={item} key={item.id} />);
 
   return (
@@ -358,7 +349,7 @@ const SearchPage: FC = ({ q, data, pagination }) => {
       </div>
     </div>
   );
-};
+});
 
 function truncateText(text: string, maxLength: number) {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;

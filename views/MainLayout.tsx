@@ -22,6 +22,10 @@ export default jsxRenderer(
           />
           <link rel="shortcut icon" href="https://hono.dev/favicon.ico" />
 
+          {/* Preconnect to YouTube domains */}
+          <link rel="preconnect" href="https://img.youtube.com" />
+          <link rel="dns-prefetch" href="https://img.youtube.com" />
+
           <meta
             name="description"
             content="Bringing YouTube back to Nokia S60 Devices"
@@ -38,6 +42,11 @@ export default jsxRenderer(
             {`
               a { text-decoration: none; }
               table { border-collapse: collapse; }
+              body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 0.2rem; }
+              img { max-width: 100%; height: auto; }
+              .video-item { padding: 8px 0; border-bottom: 1px solid #ddd; display: flex; font-size: small; }
+              .thumbnail { position: relative; }
+              .video-info { margin-left: 8px; flex: 1; display: flex; flex-direction: column; }
             `}
           </style>
         </head>
