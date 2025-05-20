@@ -9,8 +9,8 @@
     "lodash": "https://cdn.skypack.dev/lodash"
   },
   "tasks": {
-    "dev": "deno run --watch --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
-    "start": "deno run --allow-net --allow-read --allow-env --unstable-kv --allow-write --allow-import src/main.ts",
+    "dev": "deno run --watch --allow-net --allow-read --allow-env --unstable-kv --unstable-cron --allow-write --allow-import src/main.ts",
+    "start": "deno run --allow-net --allow-read --allow-env --unstable-kv --unstable-cron --allow-write --allow-import src/main.ts",
     "deploy": "deployctl deploy --prod"
   },
   "compilerOptions": {

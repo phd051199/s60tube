@@ -78,10 +78,12 @@ const getURL = (input: string | Request | URL) => {
     : new URL(input.url);
 };
 
-const DEFAULT_PROXY_URLS = [
-  "https://dph.io.vn/proxy",
+export const DEFAULT_PROXY_URLS = [
   "https://stream.dph.io.vn/proxy",
+  "https://dph.io.vn/proxy",
 ];
+
+let currentFetchProxy = DEFAULT_PROXY_URLS[0];
 
 export function fetchFunction(
   input: string | Request | URL,
@@ -101,6 +103,10 @@ export function fetchFunction(
     ...init,
     ...(input instanceof Request ? { raw: input } : {}),
   };
+
+  if (href.includes("search")) {
+    return proxy(`https://dph.io.vn/proxy?__href=${href}`, requestOptions);
+  }
 
   return tryProxies(href, requestOptions, proxyUrls, 0);
 }
@@ -132,20 +138,41 @@ async function tryProxies(
       throw new Error("Login required");
     }
 
+    currentFetchProxy = currentProxy;
+    console.warn("Using proxy", currentProxy);
     return response;
   } catch {
+    console.error("Failed to fetch using proxy", currentProxy);
     return tryProxies(href, requestOptions, proxyUrls, index + 1);
   }
 }
 
-export const saveVideoUrl = async (videoId: string, videoUrl: string) => {
-  await fetch(`https://dph.io.vn/kv`, {
+const saveToKV = async (endpoint: string, key: string, value: string) => {
+  await fetch(endpoint, {
     method: "POST",
     body: JSON.stringify({
-      key: videoId,
-      value: videoUrl,
+      key,
+      value,
     }),
   });
+};
+
+export const saveVideoUrl = async (videoId: string, videoUrl: string) => {
+  if (currentFetchProxy.includes("stream.dph.io.vn")) {
+    await saveToKV("https://stream.dph.io.vn/kv", videoId, videoUrl);
+    return;
+  }
+  const kvUrl = currentFetchProxy.replace("proxy", "kv");
+  const playbackUrl = `${
+    currentFetchProxy.replace(
+      "proxy",
+      "videoplayback",
+    )
+  }?v=${videoId}`;
+  await Promise.all([
+    saveToKV(kvUrl, videoId, videoUrl),
+    saveToKV("https://stream.dph.io.vn/kv", videoId, playbackUrl),
+  ]);
 };
 
 export const generatePoToken = () => {

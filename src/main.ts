@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { etag } from "hono/etag";
+import { createMiddleware } from "hono/factory";
 import { poweredBy } from "hono/powered-by";
+
 import { Innertube, Log } from "youtubei.js/cf-worker";
 
 import { customLogger, useErrorHandler } from "./core/index.ts";
@@ -27,42 +29,21 @@ async function getInnertubeClient() {
 const app = new Hono<Env>();
 const innertube = await getInnertubeClient();
 
-app.use(etag(), poweredBy());
-
-app.use(async (c, next) => {
-  if (Deno.env.get("DENO_ENV") !== "production") {
-    customLogger(c);
-  }
-
-  c.set("innertube", innertube);
-
-  c.header("X-Content-Type-Options", "nosniff");
-  c.header("Referrer-Policy", "no-referrer");
-
-  await next();
-
-  if (!c.res.headers.get("Cache-Control")) {
-    if (c.req.path === "/") {
-      c.header("Cache-Control", "public, max-age=86400");
-    } else if (c.req.path.includes("/static/")) {
-      c.header("Cache-Control", "public, max-age=86400");
-    } else {
-      c.header("Cache-Control", "public, max-age=60");
+const innertubeMiddleware = (innertube: Innertube) => {
+  return createMiddleware(async (c, next) => {
+    if (Deno.env.get("DENO_ENV") !== "production") {
+      customLogger(c);
     }
-  }
-});
 
-app.get("/channel/:id", async (c) => {
-  const {
-    payload: { browseId: channelId },
-  } = await c
-    .get("innertube")
-    .resolveURL(`https://www.youtube.com/@${c.req.param("id")}`);
+    c.set("innertube", innertube);
+    c.header("X-Content-Type-Options", "nosniff");
+    c.header("Referrer-Policy", "no-referrer");
 
-  const result = await c.get("innertube").getChannel(channelId);
+    await next();
+  });
+};
 
-  return c.json(result);
-});
+app.use(etag(), poweredBy(), innertubeMiddleware(innertube));
 
 app.route("/", homeRouter);
 app.route("/", videoRouter);
