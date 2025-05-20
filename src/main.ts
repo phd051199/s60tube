@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { etag } from "hono/etag";
+import { poweredBy } from "hono/powered-by";
 import { Innertube, Log } from "youtubei.js/cf-worker";
 
 import { customLogger, useErrorHandler } from "./core/index.ts";
@@ -17,7 +18,6 @@ async function getInnertubeClient() {
       lang: "en",
       location: "VN",
       fetch: fetchFunction,
-      generate_session_locally: true,
     });
     Log.setLevel(Log.Level.ERROR);
   }
@@ -27,7 +27,7 @@ async function getInnertubeClient() {
 const app = new Hono<Env>();
 const innertube = await getInnertubeClient();
 
-app.use(etag());
+app.use(etag(), poweredBy());
 
 app.use(async (c, next) => {
   if (Deno.env.get("DENO_ENV") !== "production") {
@@ -69,11 +69,4 @@ app.route("/", videoRouter);
 
 useErrorHandler(app);
 
-Deno.serve(
-  {
-    onListen: ({ hostname, port }) => {
-      console.log(`S60Tube server running on http://${hostname}:${port}`);
-    },
-  },
-  app.fetch,
-);
+Deno.serve(app.fetch);

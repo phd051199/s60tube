@@ -1,6 +1,7 @@
 import BG from "bgutils-js";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { proxy } from "hono/proxy";
 import _ from "lodash";
 import Innertube, { ProtoUtils, Utils } from "youtubei.js/cf-worker";
 import { z } from "zod";
@@ -50,7 +51,6 @@ export const getDownloadLink = async (
 ) => {
   try {
     const info = await innertube.getBasicInfo(videoId).catch((error) => {
-      console.error("Error getting basic info", videoId);
       throw error;
     });
 
@@ -70,41 +70,72 @@ export const getDownloadLink = async (
   }
 };
 
-export function fetchFunction(
-  input: string | Request | URL,
-  init?: RequestInit,
-): Promise<Response> {
-  const url = typeof input === "string"
+const getURL = (input: string | Request | URL) => {
+  return typeof input === "string"
     ? new URL(input)
     : input instanceof URL
     ? input
     : new URL(input.url);
+};
 
-  if (!url.pathname.includes("v1")) {
-    return fetch(input, init);
-  }
+const DEFAULT_PROXY_URLS = [
+  "https://dph.io.vn/proxy",
+  "https://stream.dph.io.vn/proxy",
+];
 
+export function fetchFunction(
+  input: string | Request | URL,
+  init?: RequestInit,
+  proxyUrls: string[] = DEFAULT_PROXY_URLS,
+): Promise<Response> {
   const headers = new Headers(
     init?.headers || (input instanceof Request ? input.headers : undefined),
   );
+  const href = getURL(input).href;
+  if (!href.includes("v1")) {
+    return fetch(input, init);
+  }
 
-  const request = new Request(
-    `https://dph.io.vn/?__host=${url.href}`,
-    input instanceof Request ? input : undefined,
-  );
-  headers.delete("user-agent");
+  const requestOptions = {
+    headers,
+    ...init,
+    ...(input instanceof Request ? { raw: input } : {}),
+  };
 
-  return fetch(
-    request,
-    init
-      ? {
-        ...init,
-        headers,
-      }
-      : {
-        headers,
-      },
-  );
+  return tryProxies(href, requestOptions, proxyUrls, 0);
+}
+
+async function tryProxies(
+  href: string,
+  requestOptions: any,
+  proxyUrls: string[],
+  index: number,
+): Promise<Response> {
+  if (index >= proxyUrls.length) {
+    throw new Error(
+      `All ${proxyUrls.length} proxies failed when fetching ${href}`,
+    );
+  }
+
+  const currentProxy = proxyUrls[index];
+  const proxyUrl = `${currentProxy}?__href=${href}`;
+
+  try {
+    const response = await proxy(proxyUrl, requestOptions);
+
+    const clonedResponse = response.clone();
+    const body = await clonedResponse.json().catch((_e) => {
+      return {};
+    });
+
+    if (body.playabilityStatus?.status === "LOGIN_REQUIRED") {
+      throw new Error("Login required");
+    }
+
+    return response;
+  } catch {
+    return tryProxies(href, requestOptions, proxyUrls, index + 1);
+  }
 }
 
 export const saveVideoUrl = async (videoId: string, videoUrl: string) => {
@@ -129,11 +160,11 @@ export const generatePoToken = () => {
 
 export const getVideoInfo = async (c: Context, id: string) => {
   const innertube = c.get("innertube");
-  const { url, format } = await getDownloadLink(innertube, id);
+  const result = await getDownloadLink(innertube, id);
 
-  await saveVideoUrl(id, url);
+  await saveVideoUrl(id, result.url);
 
-  return { format };
+  return result;
 };
 
 export { createSessionCache, SessionCache } from "./cache.ts";

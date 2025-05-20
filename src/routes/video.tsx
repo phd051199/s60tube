@@ -36,7 +36,7 @@ router.get("/search", MainLayout, async (c) => {
   if (cachedData) {
     const paginatedData = cachedData.allFilteredData.slice(
       startIndex,
-      endIndex,
+      endIndex
     );
 
     return c.render(
@@ -49,7 +49,7 @@ router.get("/search", MainLayout, async (c) => {
           itemsPerPage,
           baseUrl: `/search?q=${encodeURIComponent(q)}`,
         }}
-      />,
+      />
     );
   }
 
@@ -79,7 +79,7 @@ router.get("/search", MainLayout, async (c) => {
         itemsPerPage,
         baseUrl: `/search?q=${encodeURIComponent(q)}`,
       }}
-    />,
+    />
   );
 });
 
@@ -97,22 +97,18 @@ router.get(
 
       return c.render(
         <DetailPage
-          url={`http://ytb-prx.dph.workers.dev/videoplayback?v=${id}`}
+          url={`http://stream.dph.io.vn/videoplayback?v=${id}`}
           format={format}
-        />,
+        />
       );
     } catch {
-      return c.json(
-        {
-          code: 503,
-          error: "Service Unavailable",
-          message:
-            "YouTube service may be temporarily unavailable. Please try again later.",
-        },
-        503,
+      return c.text(
+        `YT has restricted this IP address.
+         Please try again in a few hours.`,
+        503
       );
     }
-  },
+  }
 );
 
 export default router;

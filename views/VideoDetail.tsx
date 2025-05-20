@@ -7,7 +7,7 @@ const StreamingInstructions: FC = memo(() => {
       <h4 style={styles.h4}>
         Please copy the link below and use{" "}
         <a
-          href="https://github.com/phd051199/s60tube/raw/refs/heads/main/static/coreplayer.sis"
+          href="https://dph.io.vn/static/coreplayer.sis"
           style={styles.link}
         >
           <span>CorePlayer</span>
