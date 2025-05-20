@@ -19,7 +19,6 @@ type SearchCacheData = {
 };
 
 const searchCache = createSessionCache<SearchCacheData>(5 * 60 * 1000);
-
 const router = new Hono<Env>();
 
 router.get("/search", MainLayout, async (c) => {
@@ -94,7 +93,7 @@ router.get(
       const { id } = c.req.valid("param");
       const { format } = await getVideoInfo(c, id).catch();
 
-      c.header("Cache-Control", "public, max-age=3600");
+      c.header("Cache-Control", "public, max-age=300");
 
       return c.render(
         <DetailPage

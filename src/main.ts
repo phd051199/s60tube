@@ -17,7 +17,7 @@ async function getInnertubeClient() {
       lang: "en",
       location: "VN",
       fetch: fetchFunction,
-      generate_session_locally: false,
+      generate_session_locally: true,
     });
     Log.setLevel(Log.Level.ERROR);
   }
