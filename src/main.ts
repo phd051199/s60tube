@@ -1,53 +1,20 @@
 import { Hono } from "hono";
-import { etag } from "hono/etag";
-import { createMiddleware } from "hono/factory";
-import { poweredBy } from "hono/powered-by";
-
-import { Innertube, Log } from "youtubei.js/cf-worker";
-
-import { customLogger, useErrorHandler } from "./core/index.ts";
-import { Env } from "./types.ts";
-
-import homeRouter from "./routes/home.tsx";
-import videoRouter from "./routes/video.tsx";
-import { fetchFunction } from "./utils/index.ts";
-
-let innertubeInstance: Innertube | null = null;
-
-async function getInnertubeClient() {
-  if (!innertubeInstance) {
-    innertubeInstance = await Innertube.create({
-      lang: "en",
-      location: "VN",
-      fetch: fetchFunction,
-    });
-    Log.setLevel(Log.Level.ERROR);
-  }
-  return innertubeInstance;
-}
+import { proxy } from "hono/proxy";
+import { HTTPException } from "hono/http-exception";
 
 const app = new Hono<Env>();
-const innertube = await getInnertubeClient();
+app.get("/", (c) => c.redirect("https://s60tube.io.vn"));
 
-const innertubeMiddleware = (innertube: Innertube) => {
-  return createMiddleware(async (c, next) => {
-    if (Deno.env.get("DENO_ENV") !== "production") {
-      customLogger(c);
-    }
+app.all("/proxy", async (c) => {
+  let url = c.req.header("x-url") || c.req.query("url") || c.req.query("u");
 
-    c.set("innertube", innertube);
-    c.header("X-Content-Type-Options", "nosniff");
-    c.header("Referrer-Policy", "no-referrer");
+  if (!url) {
+    throw new HTTPException(404, {
+      message: "Missing required 'url' parameter",
+    });
+  }
 
-    await next();
-  });
-};
-app.get('/', (c) => c.redirect('https://s60tube.io.vn'));
-//app.use(etag(), poweredBy(), innertubeMiddleware(innertube));
-
-//app.route("/", homeRouter);
-//app.route("/", videoRouter);
-
-useErrorHandler(app);
+  return proxy(decodeURIComponent(url), c.req);
+});
 
 Deno.serve(app.fetch);
