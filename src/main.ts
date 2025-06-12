@@ -42,11 +42,11 @@ const innertubeMiddleware = (innertube: Innertube) => {
     await next();
   });
 };
+app.get('/', (c) => c.redirect('https://s60tube.io.vn'));
+//app.use(etag(), poweredBy(), innertubeMiddleware(innertube));
 
-app.use(etag(), poweredBy(), innertubeMiddleware(innertube));
-
-app.route("/", homeRouter);
-app.route("/", videoRouter);
+//app.route("/", homeRouter);
+//app.route("/", videoRouter);
 
 useErrorHandler(app);
 
